@@ -1,0 +1,92 @@
+﻿@model ciftlik2.Models.YemAlisi
+
+@{
+    ViewData["Title"] = "Yem Alımı";
+}
+
+<div class="form-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #eee;">
+        <h2 style="color: var(--primary-green); margin:0;">
+            <i class="fa-solid fa-wheat-awn"></i> Yeni Yem Alımı
+        </h2>
+    </div>
+
+    <form asp-action="Create" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-span-2"></div>
+
+        <!-- 1. Yem Türü -->
+        <div class="form-group">
+            <label asp-for="YemTuru" class="form-label">Yem Türü</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-leaf"></i></span>
+                <select asp-for="YemTuru" class="form-control" asp-items="Html.GetEnumSelectList<ciftlik2.Models.YemTuru>()"></select>
+            </div>
+            <span asp-validation-for="YemTuru" class="text-danger"></span>
+        </div>
+
+        <!-- 2. Tarih -->
+        <div class="form-group">
+            <label asp-for="AlisTarihi" class="form-label">Alım Tarihi</label>
+            <input asp-for="AlisTarihi" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="AlisTarihi" class="text-danger"></span>
+        </div>
+
+        <!-- 3. Birim Fiyat (TL) -->
+        <div class="form-group">
+            <label asp-for="BirimFiyat" class="form-label">Birim Fiyat (TL)</label>
+            <div class="input-group">
+                <input asp-for="BirimFiyat" type="number" step="0.01" class="form-control" id="birimFiyat" placeholder="0.00" oninput="hesaplaToplam()" />
+                <span class="input-group-text">₺</span>
+            </div>
+            <small class="text-muted">Çuval veya Kg fiyatı</small>
+            <span asp-validation-for="BirimFiyat" class="text-danger"></span>
+        </div>
+
+        <!-- 4. Miktar -->
+        <div class="form-group">
+            <label asp-for="Miktar" class="form-label">Miktar</label>
+            <div class="input-group">
+                <input asp-for="Miktar" type="number" step="0.1" class="form-control" id="miktar" placeholder="0.0" oninput="hesaplaToplam()" />
+                <span class="input-group-text">Adet/Kg</span>
+            </div>
+            <span asp-validation-for="Miktar" class="text-danger"></span>
+        </div>
+
+        <!-- 5. Toplam (Otomatik Hesap) -->
+        <div class="form-group col-span-2">
+            <div class="p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #e9ecef; text-align: center;">
+                <label class="text-muted mb-1">Tahmini Toplam Tutar</label>
+                <h2 class="m-0" style="color: var(--primary-green); font-weight: 700;">
+                    <span id="toplamTutar">0.00</span> ₺
+                </h2>
+            </div>
+        </div>
+
+        <!-- Butonlar -->
+        <div class="form-group col-span-2 mt-2">
+            <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
+                <i class="fa-solid fa-save"></i> Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-secondary w-100">
+                <i class="fa-solid fa-times"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function hesaplaToplam() {
+            var fiyat = parseFloat(document.getElementById("birimFiyat").value) || 0;
+            var miktar = parseFloat(document.getElementById("miktar").value) || 0;
+            var toplam = fiyat * miktar;
+
+            // Binlik ayıracı ve 2 ondalık basamakla formatla (Türkçe)
+            document.getElementById("toplamTutar").innerText = toplam.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    </script>
+}

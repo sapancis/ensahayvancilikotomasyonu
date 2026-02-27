@@ -1,0 +1,77 @@
+﻿@model ciftlik2.Models.TedaviKaydi
+
+@{
+    ViewData["Title"] = "Tedavi Kaydını Düzenle";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-pencil"></i> Tedavi Kaydını Düzenle</h1>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="form-container">
+        <form asp-action="Edit">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-grid">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label asp-for="HayvanId" class="form-label">Hangi Hayvan?</label>
+                        <select asp-for="HayvanId" class="form-control" asp-items="@ViewBag.HayvanListesi">
+                            <option value="">-- Lütfen bir hayvan seçin --</option>
+                        </select>
+                        <span asp-validation-for="HayvanId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Teshis" class="form-label">Teşhis</label>
+                        <input asp-for="Teshis" class="form-control" />
+                        <span asp-validation-for="Teshis" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="KullanilanIlac" class="form-label">Kullanılan İlaç</label>
+                        <input asp-for="KullanilanIlac" class="form-control" />
+                        <span asp-validation-for="KullanilanIlac" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TedaviUcreti" class="form-label">Tedavi Ücreti / Maliyet</label>
+                    <div class="input-group">
+                        <input asp-for="TedaviUcreti" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                        <span class="input-group-text">₺</span>
+                    </div>
+                    <span asp-validation-for="TedaviUcreti" class="text-danger"></span>
+                </div>
+
+                <div class="form-column">
+                    <div class="form-group">
+                        <label asp-for="SutArinmaTarihi" class="form-label">Süt Arınma Tarihi</label>
+                        <input asp-for="SutArinmaTarihi" class="form-control" type="date" />
+                        <span asp-validation-for="SutArinmaTarihi" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ReceteyiYazanVeteriner" class="form-label">Reçeteyi Yazan Veteriner</label>
+                        <input asp-for="ReceteyiYazanVeteriner" class="form-control" />
+                        <span asp-validation-for="ReceteyiYazanVeteriner" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DenetleyenVeteriner" class="form-label">Denetleyen Veteriner</label>
+                        <input asp-for="DenetleyenVeteriner" class="form-control" />
+                        <span asp-validation-for="DenetleyenVeteriner" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div classs="form-group" style="margin-top: 20px;">
+                <input type="submit" value="Kaydı Güncelle" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

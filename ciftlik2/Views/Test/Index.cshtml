@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ciftlik2.Models.TestKaydi>
+
+@{
+    ViewData["Title"] = "Test Kayıt Listesi";
+}
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-vial"></i> Test Kayıt Listesi</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Yeni Test Kaydı Ekle
+        </a>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hayvan Küpe No</th>
+                    <th>Hayvan Adı</th>
+                    <th>Test Adı</th>
+                    <th>Test Tarihi</th>
+                    <th>Sonuç</th>
+                    <th class="text-center">Eylemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kayit in Model)
+                {
+                    <tr>
+                        <td><strong>@kayit.Hayvan?.KupeNumarasi</strong></td>
+                        <td>@kayit.Hayvan?.Ad</td>
+                        <td>@kayit.TestIsmi</td>
+                        <td>
+                            @if (kayit.TestTarihi.HasValue)
+                            {
+                                @kayit.TestTarihi.Value.ToString("dd.MM.yyyy")
+                            }
+                        </td>
+                        <td>@kayit.Sonuc</td>
+
+                        <td class="action-buttons-cell">
+                            <a asp-action="Edit" asp-route-id="@kayit.Id" class="btn-icon btn-icon-edit" title="Düzenle">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@kayit.Id" class="btn-icon btn-icon-delete" title="Sil">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

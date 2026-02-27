@@ -1,0 +1,139 @@
+﻿@model ciftlik2.Models.TopluAsiViewModel
+@using ciftlik2.Models
+
+@{
+    ViewData["Title"] = "Toplu Aşı Kaydı";
+    // View'a gelen listeyi alıyoruz
+    var hayvanListesi = ViewBag.HayvanListesi as List<Hayvan>;
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-boxes-stacked"></i> Toplu Aşı Kaydı</h1>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Aşı Listesine Geri Dön
+        </a>
+    </div>
+
+    <form asp-action="TopluAsi" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger validation-summary-errors"></div>
+
+        <div class="toplu-islem-layout">
+
+            <!-- AŞI BİLGİLERİ -->
+            <div class="form-container" style="max-width: none; background-color: #f8f9fa; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <h3>1. Aşı Bilgilerini Girin</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="AsiIsmi" class="form-label"></label>
+                        <input asp-for="AsiIsmi" class="form-control" placeholder="Örn: Şap, Çiçek" />
+                        <span asp-validation-for="AsiIsmi" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AsiTarihi" class="form-label"></label>
+                        <input asp-for="AsiTarihi" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="AsiTarihi" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HAYVAN SEÇİMİ (AKORDİYONLU) -->
+            <h3 style="margin-bottom: 15px; color: var(--primary-green);">2. Hayvanları Seçin</h3>
+
+            <div class="accordion-wrapper">
+                @if (hayvanListesi == null || !hayvanListesi.Any())
+                {
+                    <div class="p-4 text-center bg-white border rounded">
+                        <p class="text-muted">Listelenecek aktif hayvan bulunamadı.</p>
+                    </div>
+                }
+                else
+                {
+                    // GRUPLAMA MANTIĞI
+                    var gruplar = hayvanListesi.GroupBy(h => h.HayvanGrubu).OrderBy(g => g.Key);
+
+                    foreach (var grup in gruplar)
+                    {
+                        // Grup ID'si (JavaScript için benzersiz olmalı)
+                        string groupId = "grp-" + grup.Key.Replace(" ", "").ToLower();
+
+                        <div class="accordion-item">
+                            <!-- Grup Başlığı -->
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                <div class="accordion-title">
+                                    <span style="font-size:1.1rem;">@grup.Key</span>
+                                    <span class="badge bg-secondary ms-2">@grup.Count()</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                            </div>
+
+                            <!-- Grup İçeriği -->
+                            <div class="accordion-content">
+                                <!-- Hepsini Seç Satırı -->
+                                <div class="group-select-header">
+                                    <input type="checkbox" id="check-all-@groupId" onchange="toggleGroupCheckboxes(this, '@groupId')" />
+                                    <label for="check-all-@groupId" style="cursor: pointer;">Bu Gruptaki Herkesi Seç</label>
+                                </div>
+
+                                <!-- Hayvan Listesi Grid -->
+                                <div class="group-items-grid" id="@groupId">
+                                    @foreach (var hayvan in grup)
+                                    {
+                                        <label class="hayvan-check-card">
+                                            <input type="checkbox" name="secilenHayvanIdleri" value="@hayvan.Id" class="single-check" />
+                                            <div>
+                                                <strong style="color:var(--primary-green);">@hayvan.KupeNumarasi</strong>
+                                                <br />
+                                                <small style="color:#666;">@hayvan.Ad</small>
+                                            </div>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="fa-solid fa-check-double"></i> Tüm Seçilenlere Aşı Kaydı Ekle
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // Akordiyon Aç/Kapa
+        function toggleAccordion(header) {
+            var item = header.parentElement;
+            if (item.classList.contains('active')) {
+                item.classList.remove('active');
+            } else {
+                item.classList.add('active');
+            }
+        }
+
+        // Grubu Toplu Seçme
+        function toggleGroupCheckboxes(masterCheckbox, groupId) {
+            // Sadece ilgili ID'ye sahip div içindeki checkboxları bul
+            var groupContainer = document.getElementById(groupId);
+            var checkboxes = groupContainer.querySelectorAll('.single-check');
+
+            checkboxes.forEach(function(cb) {
+                cb.checked = masterCheckbox.checked;
+            });
+        }
+
+        // Sayfa açıldığında ilk grubu aç
+        document.addEventListener("DOMContentLoaded", function() {
+            var firstItem = document.querySelector('.accordion-item');
+            if(firstItem) firstItem.classList.add('active');
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

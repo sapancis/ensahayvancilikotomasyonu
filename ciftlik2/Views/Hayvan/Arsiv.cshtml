@@ -1,0 +1,47 @@
+﻿@model IEnumerable<ciftlik2.Models.Hayvan>
+
+@{
+    ViewData["Title"] = "Sürüden Ayrılanlar (Arşiv)";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-archive"></i> @ViewData["Title"]</h1>
+        
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Aktif Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Küpe Numarası</th>
+                    <th>Adı</th>
+                    <th>Cinsi</th>
+                    <th>Durum</th> 
+                    <th>Çıkış Nedeni</th>
+                    </tr>
+            </thead>
+            <tbody>
+                @foreach (var hayvan in Model)
+                {
+                    <tr>
+                        <td><strong>@hayvan.KupeNumarasi</strong></td>
+                        <td>@hayvan.Ad</td>
+                        <td>@hayvan.Cins</td>
+                        
+                        <td>
+                            <span style="color: #E91E63; font-weight: 600;">Pasif</span>
+                        </td>
+                        
+                        <td>
+                            @hayvan.CikisNedeni?.GetDisplayName()
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

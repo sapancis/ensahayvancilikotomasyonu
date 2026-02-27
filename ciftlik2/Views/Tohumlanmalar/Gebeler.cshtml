@@ -1,0 +1,122 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+@using ciftlik2.Models
+
+@{
+    ViewData["Title"] = "Gebe Hayvanlar";
+
+    // Controller'dan gönderilen Ayarlar objesini alıyoruz
+    var ayarlar = (SistemAyarlari)ViewBag.Ayarlar;
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-baby-carriage text-success"></i> Gebe Hayvan Listesi</h1>
+            <p class="text-muted">Aktif gebelikler ve tahmini doğum tarihleri.</p>
+        </div>
+        <!-- ARŞİV BUTONU -->
+        <div>
+            <a asp-action="GebelikArsivi" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-history"></i> Geçmiş / Arşiv
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Küpe No</th>
+                    <th>Tohumlanma Tarihi</th>
+                    <th>Baba</th>
+                    <th>Kuruya Alma</th>
+                    <th>Tahmini Doğum</th>
+                    <th>Kalan Gün</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    // --- DİNAMİK TARİH HESAPLAMA ---
+                    var dogumTarihi = item.TohumlanmaTarihi.AddDays(ayarlar.StandartGebelikSuresi);
+                    var kuruyaAlmaTarihi = item.TohumlanmaTarihi.AddDays(ayarlar.KuruyaAlmaGunu);
+
+                    var dogumaKalan = (dogumTarihi - DateTime.Today).Days;
+                    var kuruyaKalan = (kuruyaAlmaTarihi - DateTime.Today).Days;
+                    // ------------------------------
+
+                    <tr>
+                        <td>
+                            <strong>@item.DisiHayvan?.TamKupeNumarasi</strong><br>
+                            <small class="text-muted">@item.DisiHayvan?.Ad</small>
+                        </td>
+                        <td>@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</td>
+                        <td>@(item.ErkekHayvan?.TamKupeNumarasi ?? "-")</td>
+
+                        <!-- Kuruya Alma Tarihi -->
+                        <td>
+                            @if (kuruyaKalan <= 0)
+                            {
+                                <span class="badge bg-warning text-dark">KURUDA</span>
+                            }
+                            else
+                            {
+                                <span>@kuruyaAlmaTarihi.ToString("dd.MM.yyyy")</span>
+                                <small class="d-block text-muted">(@kuruyaKalan gün kaldı)</small>
+                            }
+                        </td>
+
+                        <!-- Doğum Tarihi -->
+                        <td style="font-weight:bold; color:#E91E63;">
+                            @dogumTarihi.ToString("dd.MM.yyyy")
+                        </td>
+
+                        <!-- Geri Sayım -->
+                        <td>
+                            @if (dogumaKalan <= 20)
+                            {
+                                <span class="badge bg-danger animate-pulse">Son @dogumaKalan Gün</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@dogumaKalan Gün</span>
+                            }
+                        </td>
+
+                        <!-- İŞLEM BUTONLARI -->
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <!-- 1. DOĞUM BUTONU -->
+                                <a asp-controller="Hayvan" asp-action="Create"
+                                   asp-route-anaKupe="@item.DisiHayvan?.KupeNumarasi"
+                                   asp-route-babaKupe="@(item.ErkekHayvan?.KupeNumarasi ?? "")"
+                                   asp-route-refTohumlamaId="@item.Id"
+                                   class="btn btn-success btn-sm" title="Doğum Gerçekleşti">
+                                    <i class="fa-solid fa-check"></i> Doğum
+                                </a>
+
+                                <!-- 2. DÜŞÜK BUTONU -->
+                                <form asp-action="GebelikSonlandir" method="post" onsubmit="return confirm('Bu gebeliği DÜŞÜK/ÖLÜ DOĞUM olarak sonlandırmak istediğinize emin misiniz? Bu işlem geri alınamaz.');" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="durum" value="2" /> <!-- 2 = DusukOlu -->
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Düşük / Ölü Doğum">
+                                        <i class="fa-solid fa-ban"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-cow"></i>
+                <p>Şu an kayıtlı gebe hayvan bulunmuyor.</p>
+            </div>
+        }
+    </div>
+</div>

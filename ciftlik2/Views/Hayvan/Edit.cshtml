@@ -1,0 +1,146 @@
+﻿@model ciftlik2.Models.Hayvan
+
+@{
+    ViewData["Title"] = "Hayvan Bilgilerini Düzenle";
+}
+
+<style>
+    .edit-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .edit-header {
+        background: #FFFBEB; /* Açık sarı */
+        padding: 20px 30px;
+        border-bottom: 1px solid #FEF3C7;
+        color: #92400E;
+    }
+
+    .edit-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-color: #D1D5DB;
+    }
+
+        .form-control:focus {
+            border-color: #F59E0B;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+    .section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #6B7280;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+</style>
+
+<div class="page-container">
+    <div class="edit-card">
+
+        <div class="edit-header">
+            <h2 style="margin:0; font-size:1.4rem; display:flex; align-items:center; gap:10px;">
+                <i class="fa-solid fa-pen-to-square"></i> Kayıt Düzenle: @Model.KupeNumarasi
+            </h2>
+        </div>
+
+        <form asp-action="Edit" asp-route-kupeNo="@Model.KupeNumarasi" class="edit-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="GirisSekli" />
+            <input type="hidden" asp-for="Cinsiyet" />
+            <input type="hidden" asp-for="Kisirlastirildi" />
+
+            <div class="row">
+                <!-- SOL KOLON -->
+                <div class="col-md-6">
+                    <div class="section-title">Temel Bilgiler</div>
+
+                    <div class="form-group">
+                        <label asp-for="KupeNumarasi" class="form-label fw-bold">Küpe Numarası</label>
+                        <input asp-for="KupeNumarasi" class="form-control" />
+                        <span asp-validation-for="KupeNumarasi" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Ad" class="form-label">İsim</label>
+                        <input asp-for="Ad" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DogumTarihi" class="form-label">Doğum Tarihi</label>
+                        <input asp-for="DogumTarihi" class="form-control" type="date" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Cins" class="form-label">Irk</label>
+                        <select asp-for="Cins" class="form-control" asp-items="ViewBag.IrkListesi">
+                            <option value="">-- Seçiniz --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SAĞ KOLON -->
+                <div class="col-md-6">
+                    <div class="section-title">Detay & Geçmiş</div>
+
+                    @if (Model.GirisSekli == ciftlik2.Models.GirisSekli.SatinAlma)
+                    {
+                        <div class="bg-light p-3 rounded border mb-3">
+                            <label class="form-label small text-muted">Alış Tarihi</label>
+                            <input asp-for="AlisTarihi" class="form-control mb-2" type="date" />
+
+                            <label class="form-label small text-muted">Fiyat (TL)</label>
+                            <input asp-for="AlisFiyati" class="form-control" type="number" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="bg-light p-3 rounded border mb-3">
+                            <label class="form-label small text-muted">Anne Küpe No</label>
+                            <input asp-for="AnaKupeNumarasi" class="form-control mb-2" />
+
+                            <label class="form-label small text-muted">Baba Küpe No</label>
+                            <input asp-for="BabaKupeNumarasi" class="form-control" />
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        <label asp-for="Hikaye" class="form-label fw-bold">Notlar & Hikaye</label>
+                        <textarea asp-for="Hikaye" class="form-control" rows="5" style="resize:none;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-light border">İptal</a>
+                <button type="submit" class="btn btn-warning text-white">
+                    <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

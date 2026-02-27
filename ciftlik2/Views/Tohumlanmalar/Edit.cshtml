@@ -1,0 +1,56 @@
+﻿@model ciftlik2.Models.Tohumlanma
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Tohumlanma Düzenle";
+}
+
+<div class="form-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #eee;">
+        <h2 style="color: var(--primary-green); margin:0;">
+            <i class="fa-solid fa-pencil"></i> Tohumlanma Düzenle
+        </h2>
+    </div>
+
+    <form asp-action="Edit" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-span-2"></div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="GebelikTestDurumu" />
+        <input type="hidden" asp-for="GebelikTestiSonucu" />
+
+        <div class="form-group">
+            <label asp-for="DisiHayvanId" class="form-label">Dişi Hayvan</label>
+            <select asp-for="DisiHayvanId" class="form-control" asp-items="ViewBag.DisiHayvanId"></select>
+            <span asp-validation-for="DisiHayvanId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TohumlanmaTarihi" class="form-label">Tohumlanma Tarihi</label>
+            <input asp-for="TohumlanmaTarihi" type="date" class="form-control" />
+            <span asp-validation-for="TohumlanmaTarihi" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ErkekHayvanId" class="form-label">Erkek Hayvan</label>
+            <select asp-for="ErkekHayvanId" class="form-control" asp-items="ViewBag.ErkekHayvanId">
+                <option value="">-- Seçiniz (Opsiyonel) --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TohumlanmaTuru" class="form-label">Yöntem</label>
+            <select asp-for="TohumlanmaTuru" class="form-control" asp-items="Html.GetEnumSelectList<TohumlanmaTuru>()"></select>
+        </div>
+
+        <div class="form-footer-grid col-span-2">
+            <a asp-action="Index" class="btn btn-secondary btn-lg btn-block"><i class="fa-solid fa-xmark"></i> İptal</a>
+            <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fa-solid fa-save"></i> Güncelle</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

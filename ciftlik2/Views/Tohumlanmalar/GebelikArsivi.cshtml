@@ -1,0 +1,112 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Gebelik Arşivi";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-history text-muted"></i> Gebelik Arşivi</h1>
+            <p class="text-muted">Sonlanmış (doğum veya düşükle biten) gebelik kayıtları.</p>
+        </div>
+        <div>
+            <!-- Geri Dön Butonu -->
+            <a asp-action="Gebeler" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Aktif Gebeliklere Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Durum</th>
+                    <th>Anne (Dişi Hayvan)</th>
+                    <th>Baba</th>
+                    <th>Tohumlanma Tarihi</th>
+                    <th>Sonlanma Şekli</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- Durum İkonu -->
+                        <td>
+                            @if (item.SonlanmaTuru == GebelikSonlanmaTuru.DogumCanli)
+                            {
+                                <div class="icon-box bg-green" style="width:36px; height:36px; font-size:1rem;" title="Canlı Doğum">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="icon-box bg-red" style="width:36px; height:36px; font-size:1rem;" title="Düşük / Ölü">
+                                    <i class="fa-solid fa-ban"></i>
+                                </div>
+                            }
+                        </td>
+
+                        <!-- Anne Bilgisi -->
+                        <td>
+                            <div class="animal-info">
+                                <div>
+                                    <strong>@item.DisiHayvan?.TamKupeNumarasi</strong><br>
+                                    <small class="text-muted">@item.DisiHayvan?.Ad</small>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Baba Bilgisi -->
+                        <td>
+                            @if (item.ErkekHayvan != null)
+                            {
+                                <span>@item.ErkekHayvan.TamKupeNumarasi</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+
+                        <!-- Tarih -->
+                        <td>
+                            <span class="date-cell">@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</span>
+                        </td>
+
+                        <!-- Sonuç Rozeti -->
+                        <td>
+                            @if (item.SonlanmaTuru == GebelikSonlanmaTuru.DogumCanli)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fa-solid fa-baby"></i> Canlı Doğum
+                                </span>
+                            }
+                            else if (item.SonlanmaTuru == GebelikSonlanmaTuru.DusukOlu)
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="fa-solid fa-heart-crack"></i> Düşük / Ölü
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Bilinmiyor</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <p>Arşivde henüz kayıtlı bir geçmiş gebelik bulunmuyor.</p>
+            </div>
+        }
+    </div>
+</div>

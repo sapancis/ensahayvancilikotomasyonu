@@ -1,0 +1,97 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Tohumlanma Arşivi";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-box-archive text-secondary"></i> Tohumlanma Geçmişi</h1>
+            <p class="text-muted">Sonuçlanmış (Boş, Doğum veya Düşük) tüm kayıtlar.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Aktif Listeye Dön
+        </a>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Sonuç</th>
+                    <th>Tarih</th>
+                    <th>Dişi Hayvan</th>
+                    <th>Baba</th>
+                    <th>Açıklama</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- SONUÇ SÜTUNU (RENKLİ ROZETLER) -->
+                        <td>
+                            @if (item.GebelikTestiSonucu == GebelikSonucu.GebeDegil)
+                            {
+                                <span class="badge bg-secondary" style="font-size:0.85rem;">
+                                    <i class="fa-solid fa-xmark"></i> BOŞ (Tutmadı)
+                                </span>
+                            }
+                            else if (item.SonlanmaTuru == GebelikSonlanmaTuru.DogumCanli)
+                            {
+                                <span class="badge bg-success" style="font-size:0.85rem;">
+                                    <i class="fa-solid fa-baby"></i> DOĞUM
+                                </span>
+                            }
+                            else if (item.SonlanmaTuru == GebelikSonlanmaTuru.DusukOlu)
+                            {
+                                <span class="badge bg-danger" style="font-size:0.85rem;">
+                                    <i class="fa-solid fa-heart-crack"></i> DÜŞÜK
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-dark border">Bilinmiyor</span>
+                            }
+                        </td>
+
+                        <td><span class="date-cell">@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</span></td>
+
+                        <td>
+                            <strong>@item.DisiHayvan?.TamKupeNumarasi</strong>
+                            <span class="text-muted small">(@item.DisiHayvan?.Ad)</span>
+                        </td>
+
+                        <td>@(item.ErkekHayvan?.TamKupeNumarasi ?? "-")</td>
+
+                        <!-- AÇIKLAMA SÜTUNU -->
+                        <td class="text-muted small">
+                            @if (item.GebelikTestiSonucu == GebelikSonucu.GebeDegil)
+                            {
+                                <span>Test sonucu negatif.</span>
+                            }
+                            else if (item.SonlanmaTuru == GebelikSonlanmaTuru.DogumCanli)
+                            {
+                                <span class="text-success">Sağlıklı doğum gerçekleşti.</span>
+                            }
+                            else if (item.SonlanmaTuru == GebelikSonlanmaTuru.DusukOlu)
+                            {
+                                <span class="text-danger">Gebelik başarısız sonlandı.</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <p>Arşivde kayıt bulunamadı.</p>
+            </div>
+        }
+    </div>
+</div>

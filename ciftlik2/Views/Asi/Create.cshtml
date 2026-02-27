@@ -1,0 +1,71 @@
+﻿@model ciftlik2.Models.AsiKaydi
+
+@{
+    ViewData["Title"] = "Yeni Aşı Kaydı";
+}
+
+<div class="form-container">
+    <!-- Başlık Alanı -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #eee;">
+        <h2 style="color: var(--primary-green); margin:0;">
+            <i class="fa-solid fa-syringe"></i> Yeni Aşı Kaydı
+        </h2>
+    </div>
+
+    <!-- Form Alanı (Grid Yapısı) -->
+    <form asp-action="Create" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-span-2"></div>
+
+        <!-- 1. HAYVAN SEÇİMİ -->
+        <div class="form-group">
+            <label asp-for="HayvanId" class="form-label">Uygulanan Hayvan</label>
+            <div class="input-group">
+                <span class="input-group-text" style="background-color: #e8f5e9; color: var(--primary-green); border-color: #ced4da;">
+                    <i class="fa-solid fa-cow"></i>
+                </span>
+                <select asp-for="HayvanId" class="form-control" asp-items="ViewBag.HayvanListesi">
+                    <option value="">-- Hayvan Seçiniz --</option>
+                </select>
+            </div>
+            <span asp-validation-for="HayvanId" class="text-danger"></span>
+        </div>
+
+        <!-- 2. AŞI İSMİ -->
+        <div class="form-group">
+            <label asp-for="AsiIsmi" class="form-label">Aşı İsmi / Türü</label>
+            <input asp-for="AsiIsmi" class="form-control" placeholder="Örn: Şap, Brusella, Çiçek..." />
+            <span asp-validation-for="AsiIsmi" class="text-danger"></span>
+        </div>
+
+        <!-- 3. TARİH -->
+        <div class="form-group">
+            <label asp-for="AsiTarihi" class="form-label">Uygulama Tarihi</label>
+            <input asp-for="AsiTarihi" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="AsiTarihi" class="text-danger"></span>
+        </div>
+
+        <!-- 4. BOŞ ALAN (Masaüstünde düzenin düzgün durması için) -->
+        <div class="form-group d-none d-md-block">
+            <!-- Görünmez boşluk -->
+        </div>
+
+        <!-- BUTONLAR (Responsive Grid) -->
+        <div class="form-footer-grid col-span-2">
+            <!-- İptal -->
+            <a asp-action="Index" class="btn btn-secondary btn-lg btn-block">
+                <i class="fa-solid fa-xmark"></i> İptal
+            </a>
+
+            <!-- Kaydet -->
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i class="fa-solid fa-save"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

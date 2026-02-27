@@ -1,0 +1,275 @@
+﻿@{
+    ViewData["Title"] = "Detaylı Analiz";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-chart-pie text-primary"></i> Çiftlik Analizi</h1>
+            <p class="text-muted">Seçilen tarih aralığına ve sıklığa göre performans raporları.</p>
+        </div>
+
+        <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+
+            <!-- 1. YENİ KAYDIRMALI FREKANS SEÇİCİ -->
+            <div class="frequency-wrapper">
+                <input type="radio" id="freqGun" name="frekans" value="gun" class="freq-input" checked onchange="applyFilter()">
+                <label for="freqGun" class="freq-option">Günlük</label>
+
+                <input type="radio" id="freqAy" name="frekans" value="ay" class="freq-input" onchange="applyFilter()">
+                <label for="freqAy" class="freq-option">Aylık</label>
+
+                <input type="radio" id="freqYil" name="frekans" value="yil" class="freq-input" onchange="applyFilter()">
+                <label for="freqYil" class="freq-option">Yıllık</label>
+
+                <!-- Kayan Arkaplan -->
+                <div class="glider"></div>
+            </div>
+
+            <!-- 2. TARİH ARALIĞI SEÇİCİ -->
+            <div class="date-filter-wrapper">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                    <input type="date" id="startDate" class="form-control" title="Başlangıç Tarihi">
+                </div>
+                <span class="date-separator">-</span>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
+                    <input type="date" id="endDate" class="form-control" title="Bitiş Tarihi">
+                </div>
+                <button class="btn btn-primary" onclick="applyFilter()">
+                    <i class="fa-solid fa-filter"></i> Uygula
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 1. SATIR: FİNANS -->
+    <div class="stats-row-full">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fa-solid fa-wallet text-success"></i> Gelir / Gider Dengesi (TL)</h3>
+                <small class="text-muted">Dönemsel nakit akışı özeti.</small>
+            </div>
+            <div class="chart-body h-large">
+                <canvas id="finansChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SATIR: VERİM & SÜRÜ -->
+    <div class="stats-grid-2">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fa-solid fa-droplet text-info"></i> İnek Başına Ortalama Süt</h3>
+                <small class="text-muted">Verim trend analizi (Seçilen sıklığa göre).</small>
+            </div>
+            <div class="chart-body h-standard">
+                <canvas id="verimChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fa-solid fa-cow text-warning"></i> Sürü Varlığı Dağılımı</h3>
+                <small class="text-muted">Güncel sürü dağılımı (Anlık durum).</small>
+            </div>
+            <div class="chart-body h-standard">
+                <canvas id="suruChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SATIR: BAŞARI & SÜT TOPLAMI -->
+    <div class="stats-grid-2">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fa-solid fa-baby-carriage text-danger"></i> Tohumlama Başarısı</h3>
+                <small class="text-muted">Gebe kalma oranı.</small>
+            </div>
+            <div class="chart-body h-small">
+                <canvas id="gebelikChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3><i class="fa-solid fa-bucket text-primary"></i> Toplam Süt Üretimi</h3>
+                <small class="text-muted">Toplam üretim miktarı (Seçilen sıklığa göre).</small>
+            </div>
+            <div class="chart-body h-small">
+                <canvas id="sutUretimChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#4B5563';
+        Chart.defaults.maintainAspectRatio = false;
+
+        let charts = {};
+
+        $(document).ready(function () {
+            // Varsayılan tarih: Bu ayın başı - Bugün
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = today;
+
+            applyFilter();
+        });
+
+        function applyFilter() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+
+            // Seçilen Frekansı Al (gun, ay, yil)
+            const frekans = document.querySelector('input[name="frekans"]:checked').value;
+
+            const queryParams = `?baslangic=${start}&bitis=${end}`;
+            // Verim ve Üretim grafikleri frekans parametresini de kullanır
+            const timeSeriesParams = `?baslangic=${start}&bitis=${end}&frekans=${frekans}`;
+
+            loadFinansChart(queryParams);
+            loadVerimChart(timeSeriesParams); // Frekanslı
+            loadSuruChart();
+            loadGebelikChart(queryParams);
+            loadSutUretimChart(timeSeriesParams); // Frekanslı
+        }
+
+        // 1. Finans
+        function loadFinansChart(params) {
+            $.get('/Istatistik/GetFinansDurumu' + params, function (res) {
+                const ctx = document.getElementById('finansChart').getContext('2d');
+                if(charts['finans']) charts['finans'].destroy();
+
+                charts['finans'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: res.labels,
+                        datasets: [{
+                            label: 'Tutar (TL)',
+                            data: res.data,
+                            backgroundColor: ['#4CAF50', '#EF4444'],
+                            borderRadius: 6,
+                            barThickness: 50
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            });
+        }
+
+        // 2. Verim (Line Chart - Frekansa Duyarlı)
+        function loadVerimChart(params) {
+            $.get('/Istatistik/GetVerimlilikAnalizi' + params, function (res) {
+                const ctx = document.getElementById('verimChart').getContext('2d');
+                if(charts['verim']) charts['verim'].destroy();
+
+                charts['verim'] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: res.labels,
+                        datasets: [{
+                            label: 'Ortalama Süt (Lt)',
+                            data: res.data,
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            });
+        }
+
+        // 3. Sürü
+        function loadSuruChart() {
+            $.get('/Istatistik/GetSuruDurumu', function (res) {
+                const ctx = document.getElementById('suruChart').getContext('2d');
+                if(charts['suru']) charts['suru'].destroy();
+                charts['suru'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: res.labels,
+                        datasets: [{
+                            data: res.data,
+                            backgroundColor: ['#10B981', '#F59E0B', '#6366F1', '#8B5CF6'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'right' } }
+                    }
+                });
+            });
+        }
+
+        // 4. Gebelik
+        function loadGebelikChart(params) {
+            $.get('/Istatistik/GetGebelikBasarisi' + params, function (res) {
+                const ctx = document.getElementById('gebelikChart').getContext('2d');
+                if(charts['gebelik']) charts['gebelik'].destroy();
+                charts['gebelik'] = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: res.labels,
+                        datasets: [{
+                            data: res.data,
+                            backgroundColor: ['#2E7D32', '#EF4444'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            });
+        }
+
+        // 5. Toplam Süt (Bar Chart - Frekansa Duyarlı)
+        function loadSutUretimChart(params) {
+            $.get('/Istatistik/GetSutUretimGrafigi' + params, function (res) {
+                const ctx = document.getElementById('sutUretimChart').getContext('2d');
+                if(charts['sutUretim']) charts['sutUretim'].destroy();
+
+                charts['sutUretim'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: res.labels,
+                        datasets: [{
+                            label: 'Toplam Süt (Lt)',
+                            data: res.data,
+                            backgroundColor: '#0EA5E9',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            });
+        }
+    </script>
+}

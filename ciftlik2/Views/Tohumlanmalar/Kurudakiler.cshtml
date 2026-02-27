@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+
+@{
+    ViewData["Title"] = "Kurudaki Hayvanlar";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-droplet-slash text-warning"></i> Kurudaki Hayvanlar</h1>
+            <p class="text-muted">Doğuma hazırlık için sağımı durdurulmuş hayvanlar.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-warning d-flex align-items-center p-3 mb-4" style="background:#fff3cd; border:1px solid #ffeeba; border-radius:8px; color:#856404;">
+        <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+        <div>
+            <strong>Dikkat:</strong> Bu listedeki hayvanlar sağımhaneye alınmamalıdır. Besleme rasyonları "Kuru Dönem" olarak ayarlanmalıdır.
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Küpe No</th>
+                    <th>Kuruma Tarihi</th>
+                    <th>Tahmini Doğum</th>
+                    <th>Doğuma Kalan</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.DisiHayvan?.TamKupeNumarasi</strong><br>
+                            <small class="text-muted">@item.DisiHayvan?.Ad</small>
+                        </td>
+                        <td>
+                            @item.KuruyaAlmaTarihi.ToString("dd.MM.yyyy")
+                            <br>
+                            <span class="badge bg-secondary">@Math.Abs(item.KuruyaAlmayaKalanGun) gün önce girdi</span>
+                        </td>
+                        <td style="font-weight:bold; color:#E91E63;">
+                            @item.TahminiDogumTarihi.ToString("dd.MM.yyyy")
+                        </td>
+                        <td>
+                            <span class="badge bg-danger" style="font-size:1rem;">
+                                <i class="fa-solid fa-clock"></i> @item.DogumaKalanGun Gün
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a asp-controller="Hayvan" asp-action="Details" asp-route-kupeNo="@item.DisiHayvan?.KupeNumarasi" class="btn btn-sm btn-outline-primary">
+                                <i class="fa-solid fa-eye"></i> Detay
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-check-circle text-success"></i>
+                <p>Şu an kuruda (doğum izninde) olan hayvan yok.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ciftlik2.Models.TedaviKaydi>
+
+@{
+    ViewData["Title"] = "Tedavi Kayıt Listesi";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-notes-medical"></i> Tedavi Kayıt Listesi</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Yeni Tedavi Kaydı
+        </a>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hayvan</th>
+                    <th>Teşhis</th>
+                    <th>İlaç</th>
+                    <th>Süt Arınma</th>
+                    <th class="text-end">Maliyet</th> <!-- YENİ -->
+                    <th>Veteriner</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kayit in Model)
+                {
+                    <tr>
+                        <td><strong>@kayit.Hayvan?.KupeNumarasi</strong></td>
+                        <td>@kayit.Teshis</td>
+                        <td>@kayit.KullanilanIlac</td>
+                        <td>
+                            @if (kayit.SutArinmaTarihi.HasValue)
+                            {
+                                @kayit.SutArinmaTarihi.Value.ToString("dd.MM.yyyy")
+                            }
+                        </td>
+                        <!-- YENİ MALİYET ALANI -->
+                        <td class="text-end fw-bold text-danger">
+                            @kayit.TedaviUcreti.ToString("C2")
+                        </td>
+                        <td>@kayit.ReceteyiYazanVeteriner</td>
+                        <td class="action-buttons-cell">
+                            <a asp-action="Edit" asp-route-id="@kayit.Id" class="btn-icon btn-icon-edit"><i class="fa-solid fa-pencil"></i></a>
+                            <a asp-action="Delete" asp-route-id="@kayit.Id" class="btn-icon btn-icon-delete"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

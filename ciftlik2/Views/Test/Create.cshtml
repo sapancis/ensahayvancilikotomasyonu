@@ -1,0 +1,54 @@
+﻿@model ciftlik2.Models.TestKaydi
+
+@{
+    ViewData["Title"] = "Yeni Test Kaydı";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-vial"></i> Yeni Test Kaydı</h1>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="form-container">
+        <form asp-action="Create">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-column">
+
+                <div class="form-group">
+                    <label asp-for="HayvanId" class="form-label">Hangi Hayvan?</label>
+                    <select asp-for="HayvanId" class="form-control" asp-items="@ViewBag.HayvanListesi">
+                        <option value="">-- Lütfen bir hayvan seçin --</option>
+                    </select>
+                    <span asp-validation-for="HayvanId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TestIsmi" class="form-label">Test Adı</label>
+                    <input asp-for="TestIsmi" class="form-control" />
+                    <span asp-validation-for="TestIsmi" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TestTarihi" class="form-label">Test Tarihi</label>
+                    <input asp-for="TestTarihi" class="form-control" type="date" />
+                    <span asp-validation-for="TestTarihi" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Sonuc" class="form-label"></label>
+                    <input asp-for="Sonuc" class="form-control" />
+                    <span asp-validation-for="Sonuc" class="text-danger"></span>
+                </div>
+
+            </div>
+
+            <div classs="form-group">
+                <input type="submit" value="Testi Kaydet" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+﻿@model IEnumerable<ciftlik2.Models.Hayvan>
+
+@{
+    ViewData["Title"] = "Hayvan Listesi";
+}
+
+<div class="page-container">
+
+    <!-- BAŞLIK VE ARAMA -->
+    <div class="page-header-row">
+        <div class="header-title-area">
+            <h1><i class="fa-solid fa-cow"></i> Hayvan Listesi</h1>
+            <p class="text-muted">Gruplandırılmış aktif hayvan listesi.</p>
+        </div>
+
+        <div class="header-actions-area">
+            <form asp-action="Index" method="get" class="search-form">
+                <div class="search-group">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="search-input" placeholder="Küpe No veya Ad ara..." />
+                    <button type="submit" class="search-btn"><i class="fa-solid fa-search"></i></button>
+                </div>
+                @if (ViewData["CurrentFilter"] != null)
+                {
+                    <a asp-action="Index" class="clear-search" title="Temizle"><i class="fa-solid fa-times"></i></a>
+                }
+            </form>
+
+            <a asp-action="Create" class="btn btn-primary add-btn">
+                <i class="fa-solid fa-plus"></i> Yeni Hayvan
+            </a>
+        </div>
+    </div>
+
+    <!-- AKORDİYON YAPISI -->
+    <div class="accordion-wrapper">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-cow"></i>
+                <p>Kayıt bulunamadı.</p>
+            </div>
+        }
+        else
+        {
+            // Veriyi Grupla: HayvanGrubu'na göre
+            var gruplar = Model.GroupBy(h => h.HayvanGrubu).OrderBy(g => g.Key);
+
+            foreach (var grup in gruplar)
+            {
+                // Gruba özel renk ve ikon belirle
+                string badgeClass = "bg-secondary";
+                string iconClass = "fa-cow";
+                if (grup.Key.Contains("Buzağı")) { badgeClass = "bg-warning"; iconClass = "fa-baby"; }
+                else if (grup.Key.Contains("İnek")) { badgeClass = "bg-success"; iconClass = "fa-cow"; }
+                else if (grup.Key.Contains("Düve")) { badgeClass = "bg-info"; iconClass = "fa-venus"; }
+                else if (grup.Key.Contains("Boğa") || grup.Key.Contains("Tosun")) { badgeClass = "bg-dark"; iconClass = "fa-mars"; }
+
+                <div class="accordion-item">
+                    <!-- Başlık (Tıklanabilir) -->
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <i class="fa-solid @iconClass" style="color: #666;"></i>
+                            @grup.Key
+                            <span class="badge @badgeClass" style="margin-left: 10px; font-size: 0.8rem;">
+                                @grup.Count() Adet
+                            </span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down accordion-icon"></i>
+                    </div>
+
+                    <!-- İçerik (Tablo) -->
+                    <div class="accordion-content">
+                        <div class="table-responsive-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Küpe No</th>
+                                        <th>Adı</th>
+                                        <th>Irkı</th>
+                                        <th class="text-center">Cinsiyet</th>
+                                        <th>Yaş</th>
+                                        <th class="text-center">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in grup)
+                                    {
+                                        <tr>
+                                            <td style="font-weight:600; color:#2E7D32;">@item.TamKupeNumarasi</td>
+                                            <td>@item.Ad</td>
+                                            <td>@item.Cins</td>
+                                            <td class="text-center">
+                                                @if (item.Cinsiyet == ciftlik2.Models.Enums.Cinsiyet.Disi)
+                                                {
+                                                    <span class="badge" style="background:#FCE4EC; color:#E91E63;"><i class="fa-solid fa-venus"></i> Dişi</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge" style="background:#E3F2FD; color:#1976D2;"><i class="fa-solid fa-mars"></i> Erkek</span>
+                                                }
+                                            </td>
+                                            <td>@item.YasBilgisi</td>
+                                            <td class="action-buttons-cell">
+                                                <a asp-action="Details" asp-route-kupeNo="@item.KupeNumarasi" class="btn-icon btn-icon-details"><i class="fa-solid fa-eye"></i></a>
+                                                <a asp-action="Edit" asp-route-kupeNo="@item.KupeNumarasi" class="btn-icon btn-icon-edit"><i class="fa-solid fa-pen"></i></a>
+                                                <a asp-action="Delete" asp-route-kupeNo="@item.KupeNumarasi" class="btn-icon btn-icon-delete"><i class="fa-solid fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleAccordion(header) {
+            // Tıklanan header'ın babasını (item) bul
+            var item = header.parentElement;
+
+            // Toggle active class (Aç/Kapa)
+            if (item.classList.contains('active')) {
+                item.classList.remove('active');
+            } else {
+                // İstersen diğerlerini kapatmak için burayı açabilirsin:
+                // document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        }
+
+        // Sayfa yüklendiğinde ilk grubu otomatik aç (İsteğe bağlı)
+        document.addEventListener("DOMContentLoaded", function() {
+            var firstItem = document.querySelector('.accordion-item');
+            if(firstItem) firstItem.classList.add('active');
+        });
+    </script>
+}

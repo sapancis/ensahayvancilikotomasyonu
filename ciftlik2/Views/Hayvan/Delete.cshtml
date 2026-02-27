@@ -1,0 +1,267 @@
+﻿@model ciftlik2.Models.Hayvan
+@{
+    ViewData["Title"] = "Hayvanı Sürüden Çıkar";
+}
+
+<!-- SAYFAYA ÖZEL MODERN STİLLER -->
+<style>
+    /* Sayfayı ortalayan yapı */
+    .archive-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Ana Kart Tasarımı */
+    .archive-card {
+        background: #fff;
+        width: 100%;
+        max-width: 550px;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        animation: slideUp 0.5s ease;
+    }
+
+    /* Üst Kısım (Header) */
+    .archive-header {
+        background: linear-gradient(135deg, #1F2937 0%, #374151 100%); /* Koyu Gri Modern */
+        padding: 30px;
+        text-align: center;
+        color: #fff;
+        position: relative;
+    }
+
+    .archive-icon-circle {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 15px auto;
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .archive-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .archive-header p {
+        margin: 5px 0 0 0;
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+
+    /* İçerik Gövdesi */
+    .archive-body {
+        padding: 30px;
+    }
+
+    /* Hayvan Özet Bilgisi */
+    .animal-summary {
+        background: #F9FAFB;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .summary-avatar {
+        width: 50px;
+        height: 50px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--primary);
+        border: 1px solid #E5E7EB;
+    }
+
+    .summary-text h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-main);
+    }
+
+    .summary-text span {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* Form Elemanları */
+    .custom-select-wrapper {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .custom-select {
+        width: 100%;
+        padding: 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        background-color: #fff;
+        cursor: pointer;
+        transition: 0.2s;
+        appearance: none; /* Varsayılan oku gizle */
+        font-weight: 500;
+        color: var(--text-main);
+    }
+
+        .custom-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+        }
+
+    /* Custom Arrow for Select */
+    .select-arrow {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-muted);
+    }
+
+    /* Uyarı Kutusu */
+    .warning-box {
+        background: #FFFBEB;
+        border-left: 4px solid #F59E0B;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #92400E;
+        margin-bottom: 25px;
+        display: flex;
+        gap: 10px;
+        line-height: 1.4;
+    }
+
+    /* Fiyat Alanı Animasyonu */
+    #fiyatAlani {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    /* DÜZELTİLDİ: @@keyframes kullanıldı */
+    @@keyframes slideUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="archive-wrapper">
+    <div class="archive-card">
+
+        <!-- HEADER -->
+        <div class="archive-header">
+            <div class="archive-icon-circle">
+                <i class="fa-solid fa-folder-minus"></i>
+            </div>
+            <h2>Sürüden Çıkar</h2>
+            <p>Bu işlem kaydı tamamen silmez, arşive kaldırır.</p>
+        </div>
+
+        <!-- BODY -->
+        <div class="archive-body">
+
+            <!-- HANGİ HAYVAN? -->
+            <div class="animal-summary">
+                <div class="summary-avatar">
+                    <i class="fa-solid fa-cow"></i>
+                </div>
+                <div class="summary-text">
+                    <h4>@Model.KupeNumarasi</h4>
+                    <span>@Model.Ad • @Model.Cins • @Model.YasBilgisi</span>
+                </div>
+            </div>
+
+            <!-- UYARI -->
+            <div class="warning-box">
+                <i class="fa-solid fa-triangle-exclamation" style="margin-top:2px;"></i>
+                <div>
+                    Bu hayvanı <strong>Aktif Sürü Listesi</strong>nden çıkarmak üzeresiniz.
+                    Geçmiş aşı, süt ve tedavi kayıtları raporlarda görünmeye devam edecektir.
+                </div>
+            </div>
+
+            <!-- FORM -->
+            <form asp-action="Delete" asp-route-kupeNo="@Model.KupeNumarasi">
+
+                <div class="form-group mb-3">
+                    <label class="form-label" style="margin-left:5px;">Çıkış Nedeni</label>
+                    <div class="custom-select-wrapper">
+                        <select name="CikisNedeni" id="cikisNedeni" class="custom-select" required onchange="toggleFiyat()">
+                            <option value="">-- Bir neden seçin --</option>
+                            <option value="@ciftlik2.Models.CikisNedeni.Satis">Satış (Gelir Ekle)</option>
+                            <option value="@ciftlik2.Models.CikisNedeni.Kesim">Kesim / Kasap</option>
+                            <option value="@ciftlik2.Models.CikisNedeni.Olum">Ölüm</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+
+                <!-- SATIŞ FİYATI ALANI (Sadece Satış seçilirse açılır) -->
+                <div id="fiyatAlani" style="display:none; margin-bottom: 20px;">
+                    <label class="form-label" style="margin-left:5px;">Satış Fiyatı (TL)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-turkish-lira-sign"></i></span>
+                        <input type="number" name="SatisFiyati" class="form-control form-control-lg" placeholder="Örn: 45000" />
+                    </div>
+                    <small class="text-muted ps-2">Kasa hareketlerine gelir olarak eklenecektir.</small>
+                </div>
+
+                <div class="d-grid gap-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <a asp-action="Index" class="btn btn-secondary btn-lg" style="border:none; background:#F3F4F6;">
+                        Vazgeç
+                    </a>
+                    <button type="submit" class="btn btn-dark btn-lg">
+                        <i class="fa-solid fa-box-archive"></i> Kaydı Kapat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleFiyat() {
+            var select = document.getElementById("cikisNedeni");
+            var fiyatDiv = document.getElementById("fiyatAlani");
+
+            var selectedText = select.options[select.selectedIndex].text;
+
+            if (selectedText.includes("Satış")) {
+                fiyatDiv.style.display = "block";
+                // Animasyon efekti için
+                fiyatDiv.style.opacity = "0";
+                setTimeout(() => fiyatDiv.style.opacity = "1", 50);
+            } else {
+                fiyatDiv.style.display = "none";
+            }
+        }
+    </script>
+}

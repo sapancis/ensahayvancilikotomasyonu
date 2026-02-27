@@ -1,0 +1,69 @@
+﻿@model ciftlik2.Models.AsiKaydi
+
+@{
+    ViewData["Title"] = "Aşı Kaydını Düzenle";
+}
+
+<div class="form-container">
+    <!-- Başlık -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #eee;">
+        <h2 style="color: var(--primary-green); margin:0;">
+            <i class="fa-solid fa-syringe"></i> Aşı Kaydını Düzenle
+        </h2>
+    </div>
+
+    <form asp-action="Edit" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-span-2"></div>
+        <input type="hidden" asp-for="Id" />
+
+        <!-- 1. HAYVAN SEÇİMİ -->
+        <div class="form-group">
+            <label asp-for="HayvanId" class="form-label">Uygulanan Hayvan</label>
+            <div class="input-group">
+                <span class="input-group-text" style="background-color: #e8f5e9; color: var(--primary-green); border-color: #ced4da;">
+                    <i class="fa-solid fa-cow"></i>
+                </span>
+                <select asp-for="HayvanId" class="form-control" asp-items="ViewBag.HayvanListesi">
+                    <option value="">-- Hayvan Seçiniz --</option>
+                </select>
+            </div>
+            <span asp-validation-for="HayvanId" class="text-danger"></span>
+        </div>
+
+        <!-- 2. AŞI İSMİ -->
+        <div class="form-group">
+            <label asp-for="AsiIsmi" class="form-label">Aşı İsmi / Türü</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-pen"></i></span>
+                <input asp-for="AsiIsmi" class="form-control" placeholder="Örn: Şap, Brusella..." />
+            </div>
+            <span asp-validation-for="AsiIsmi" class="text-danger"></span>
+        </div>
+
+        <!-- 3. TARİH -->
+        <div class="form-group">
+            <label asp-for="AsiTarihi" class="form-label">Uygulama Tarihi</label>
+            <input asp-for="AsiTarihi" type="date" class="form-control" />
+            <span asp-validation-for="AsiTarihi" class="text-danger"></span>
+        </div>
+
+        <!-- 4. BOŞ ALAN (Grid düzeni için) -->
+        <div class="form-group d-none d-md-block"></div>
+
+        <!-- BUTONLAR (Responsive Grid) -->
+        <div class="form-footer-grid col-span-2">
+            <a asp-action="Index" class="btn btn-secondary btn-lg btn-block">
+                <i class="fa-solid fa-xmark"></i> İptal
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i class="fa-solid fa-save"></i> Güncelle
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

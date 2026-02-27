@@ -1,0 +1,99 @@
+﻿@model ciftlik2.Models.SutCikisi
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Süt Çıkışı / Satış";
+}
+
+<div class="form-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #eee;">
+        <h2 style="color: var(--danger); margin:0;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Süt Çıkışı / Satış
+        </h2>
+    </div>
+
+    <form asp-action="CreateCikis" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-span-2"></div>
+
+        <!-- 1. Tarih -->
+        <div class="form-group">
+            <label asp-for="Tarih" class="form-label"></label>
+            <input asp-for="Tarih" type="date" class="form-control" />
+            <span asp-validation-for="Tarih" class="text-danger"></span>
+        </div>
+
+        <!-- 2. Çıkış Türü -->
+        <div class="form-group">
+            <label asp-for="CikisTuru" class="form-label">İşlem Türü</label>
+            <select asp-for="CikisTuru" id="selectTur" class="form-control" asp-items="Html.GetEnumSelectList<SutCikisTuru>()" onchange="toggleFiyatAlani()">
+            </select>
+            <span asp-validation-for="CikisTuru" class="text-danger"></span>
+        </div>
+
+        <!-- 3. Miktar -->
+        <div class="form-group">
+            <label asp-for="Miktar" class="form-label"></label>
+            <div class="input-group">
+                <input asp-for="Miktar" id="inputMiktar" type="number" step="0.1" class="form-control" placeholder="0.0" oninput="hesaplaTutar()" />
+                <span class="input-group-text">Litre</span>
+            </div>
+            <span asp-validation-for="Miktar" class="text-danger"></span>
+        </div>
+
+        <!-- 4. Fiyat (Sadece Satış ise görünür) -->
+        <div class="form-group" id="fiyatGrubu">
+            <label asp-for="BirimFiyat" class="form-label">Litre Satış Fiyatı (TL)</label>
+            <div class="input-group">
+                <span class="input-group-text">₺</span>
+                <input asp-for="BirimFiyat" id="inputFiyat" type="number" step="0.01" class="form-control" placeholder="0.00" oninput="hesaplaTutar()" />
+            </div>
+            <small class="text-muted mt-1" id="tutarBilgisi">Toplam: 0.00 ₺</small>
+        </div>
+
+        <!-- 5. Açıklama -->
+        <div class="form-group col-span-2">
+            <label asp-for="Aciklama" class="form-label">Açıklama (Opsiyonel)</label>
+            <input asp-for="Aciklama" class="form-control" placeholder="Örn: Mandıraya verildi" />
+        </div>
+
+        <div class="form-footer-grid col-span-2">
+            <a asp-action="CikisListesi" class="btn btn-secondary btn-lg btn-block"><i class="fa-solid fa-xmark"></i> İptal</a>
+            <button type="submit" class="btn btn-danger btn-lg btn-block"><i class="fa-solid fa-save"></i> Çıkışı Kaydet</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function toggleFiyatAlani() {
+            var tur = document.getElementById("selectTur");
+            var fiyatDiv = document.getElementById("fiyatGrubu");
+            var selectedText = tur.options[tur.selectedIndex].text;
+
+            // Eğer seçilen metinde "Satış" geçiyorsa fiyatı göster
+            // Enum değeri 1 (Satis) olduğu için value kontrolü de yapabiliriz
+            if (tur.value == "1") {
+                fiyatDiv.style.display = "flex";
+            } else {
+                fiyatDiv.style.display = "none";
+                document.getElementById("inputFiyat").value = 0; // Fiyatı sıfırla
+                document.getElementById("tutarBilgisi").innerText = "Toplam: 0.00 ₺";
+            }
+        }
+
+        function hesaplaTutar() {
+            var miktar = parseFloat(document.getElementById("inputMiktar").value) || 0;
+            var fiyat = parseFloat(document.getElementById("inputFiyat").value) || 0;
+            var toplam = miktar * fiyat;
+
+            document.getElementById("tutarBilgisi").innerHTML = "<strong>Toplam: " + toplam.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺</strong>";
+        }
+
+        // Sayfa açılışında çalıştır
+        document.addEventListener("DOMContentLoaded", toggleFiyatAlani);
+    </script>
+}

@@ -1,0 +1,193 @@
+﻿@model ciftlik2.Models.Tohumlanma
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Gebelik Testi Sonucu Gir";
+}
+
+<style>
+    /* Kart Yapısı */
+    .test-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid #E5E7EB;
+        max-width: 600px;
+        margin: 40px auto;
+        overflow: hidden;
+    }
+
+    .test-header {
+        background: #F9FAFB;
+        padding: 25px;
+        text-align: center;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+        .test-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1F2937;
+        }
+
+        .test-header p {
+            margin: 5px 0 0;
+            color: #6B7280;
+            font-size: 0.95rem;
+        }
+
+    .test-body {
+        padding: 30px;
+    }
+
+    /* Bilgi Satırları */
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #E5E7EB;
+    }
+
+    .info-label {
+        color: #6B7280;
+        font-weight: 500;
+    }
+
+    .info-val {
+        font-weight: 700;
+        color: #111;
+    }
+
+    /* SEÇİM KARTLARI (BUTONLAR) */
+    .selection-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+        /* Radio butonlarını gizle */
+        .selection-container input[type="radio"] {
+            display: none;
+        }
+
+    .choice-card {
+        flex: 1;
+        padding: 20px 10px;
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease;
+        background: #fff;
+        color: #9CA3AF;
+    }
+
+        .choice-card i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .choice-card span {
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+    /* GEBE SEÇİLİRSE */
+    #optGebe:checked + .choice-card {
+        border-color: #2E7D32;
+        background: #F0FDF4;
+        color: #2E7D32;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* BOŞ SEÇİLİRSE */
+    #optBos:checked + .choice-card {
+        border-color: #EF4444;
+        background: #FEF2F2;
+        color: #EF4444;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .btn-save {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        margin-top: 25px;
+        border-radius: 12px;
+    }
+</style>
+
+<div class="page-container">
+
+    <div class="test-card">
+        <div class="test-header">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🧪</div>
+            <h2>Gebelik Testi Sonucu</h2>
+            <p>Lütfen yapılan testin sonucunu işaretleyiniz.</p>
+        </div>
+
+        <form asp-action="Yap" class="test-body">
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Bilgi Özeti -->
+            <div class="info-row">
+                <span class="info-label">Dişi Hayvan</span>
+                <span class="info-val">@Model.DisiHayvan?.TamKupeNumarasi</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Tohumlama Tarihi</span>
+                <span class="info-val">@Model.TohumlanmaTarihi.ToString("dd.MM.yyyy")</span>
+            </div>
+            <div class="info-row" style="border:none; margin-bottom:0; padding-bottom:0;">
+                <span class="info-label">Geçen Süre</span>
+                <span class="info-val">@((DateTime.Today - Model.TohumlanmaTarihi).Days) Gün</span>
+            </div>
+
+            <!-- KOCAMAN SEÇİM BUTONLARI -->
+            <div class="selection-container">
+
+                <!-- SEÇENEK 1: GEBE -->
+                <label style="flex:1;">
+                    <input type="radio" asp-for="GebelikTestiSonucu" value="@GebelikSonucu.Gebe" id="optGebe" required>
+                    <div class="choice-card">
+                        <i class="fa-solid fa-check"></i>
+                        <span>GEBE</span>
+                    </div>
+                </label>
+
+                <!-- SEÇENEK 2: BOŞ -->
+                <label style="flex:1;">
+                    <input type="radio" asp-for="GebelikTestiSonucu" value="@GebelikSonucu.GebeDegil" id="optBos" required>
+                    <div class="choice-card">
+                        <i class="fa-solid fa-xmark"></i>
+                        <span>BOŞ</span>
+                    </div>
+                </label>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-save">
+                <i class="fa-solid fa-floppy-disk"></i> Sonucu Kaydet
+            </button>
+
+            <div class="text-center mt-3">
+                <a asp-controller="Tohumlanmalar" asp-action="Index" class="text-muted text-decoration-none small">
+                    <i class="fa-solid fa-arrow-left"></i> Vazgeç ve Listeye Dön
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

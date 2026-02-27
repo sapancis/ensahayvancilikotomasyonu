@@ -1,0 +1,120 @@
+﻿@model ciftlik2.Models.SistemAyarlari
+
+@{
+    ViewData["Title"] = "Yönetim Paneli";
+}
+
+<div class="form-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 style="color: var(--primary); margin:0;">
+            <i class="fa-solid fa-screwdriver-wrench"></i> Yönetim Paneli
+        </h2>
+    </div>
+
+    @if (TempData["Mesaj"] != null)
+    {
+        <div class="alert alert-success shadow-sm">
+            <i class="fa-solid fa-check-circle"></i> @TempData["Mesaj"]
+        </div>
+    }
+
+    <form asp-action="Index" method="post" class="modern-form">
+        <input type="hidden" asp-for="Id" />
+
+        <!-- 1. GENEL AYARLAR -->
+        <div class="form-section">
+            <h4 class="section-title text-primary"><i class="fa-solid fa-house-chimney"></i> Çiftlik Kimliği</h4>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label class="form-label">Çiftlik Adı (Sitede Görünecek İsim)</label>
+                    <input asp-for="CiftlikAdi" class="form-control" placeholder="Örn: Ensa Hayvancılık" />
+                    <span asp-validation-for="CiftlikAdi" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yetkili / Sahibi</label>
+                    <input asp-for="CiftlikSahibi" class="form-control" placeholder="Ad Soyad" />
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ÜREME AYARLARI -->
+        <div class="form-section mt-4">
+            <h4 class="section-title text-danger"><i class="fa-solid fa-baby-carriage"></i> Doğum ve Gebelik Süreçleri</h4>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label class="form-label">Gebelik Süresi (Gün)</label>
+                    <input asp-for="StandartGebelikSuresi" class="form-control" type="number" />
+                    <small class="text-muted">Standart: 280 Gün</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kuruya Alma Zamanı</label>
+                    <input asp-for="KuruyaAlmaGunu" class="form-control" type="number" />
+                    <small class="text-muted">Tohumlamadan kaç gün sonra? (Standart: 220)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. KIZGINLIK VE KONTROL -->
+        <div class="form-section mt-4">
+            <h4 class="section-title text-warning"><i class="fa-solid fa-stopwatch"></i> Takip Döngüleri</h4>
+            <div class="form-grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Kızgınlık Başlangıç</label>
+                    <input asp-for="KizginlikBaslangicGun" class="form-control" type="number" />
+                    <small class="text-muted">Min. Gün (Std: 18)</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kızgınlık Bitiş</label>
+                    <input asp-for="KizginlikBitisGun" class="form-control" type="number" />
+                    <small class="text-muted">Max. Gün (Std: 23)</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gebelik Testi Günü</label>
+                    <input asp-for="GebelikTestiGun" class="form-control" type="number" />
+                    <small class="text-muted">Kaç gün sonra? (Std: 40)</small>
+                </div>
+            </div>
+            <!-- 2. ÜREME AYARLARI BÖLÜMÜNÜN İÇİNE EKLEYİN -->
+            <div class="form-grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+
+                <div class="form-group">
+                    <label class="form-label">Gebelik Süresi (Gün)</label>
+                    <input asp-for="StandartGebelikSuresi" class="form-control" type="number" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Kuruya Alma Zamanı</label>
+                    <input asp-for="KuruyaAlmaGunu" class="form-control" type="number" />
+                </div>
+
+                <!-- YENİ INPUT -->
+                <div class="form-group">
+                    <label class="form-label">Doğum Uyarısı (Kaç Gün Kala?)</label>
+                    <input asp-for="DogumOncesiBildirimGunu" class="form-control" type="number" />
+                    <small class="text-muted">Dashboard'a ne zaman düşsün?</small>
+                </div>
+
+            </div>
+
+
+        </div>
+        <!-- Mevcut formun içine uygun bir yere ekleyin -->
+        <div class="form-section mt-4">
+            <h4 class="section-title text-info"><i class="fa-solid fa-cow"></i> Buzağı Yönetimi</h4>
+            <div class="form-group">
+                <label class="form-label">Sütten Kesme Zamanı (Gün)</label>
+                <input asp-for="BuzagiSuttenKesmeGunu" class="form-control" type="number" />
+                <small class="text-muted">Buzağı doğduktan kaç gün sonra sütten kesilmeli? (Varsayılan: 70)</small>
+            </div>
+        </div>
+
+        <div class="form-footer-grid mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                <i class="fa-solid fa-xmark"></i> İptal
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-save"></i> Tüm Ayarları Kaydet
+            </button>
+        </div>
+    </form>
+</div>

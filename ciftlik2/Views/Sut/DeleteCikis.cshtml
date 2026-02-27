@@ -1,0 +1,30 @@
+﻿@model ciftlik2.Models.SutCikisi
+
+@{
+    ViewData["Title"] = "Çıkış Kaydı Sil";
+}
+
+<div class="page-container">
+    <div class="delete-container" style="background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); max-width:600px; margin:0 auto;">
+        <h3 class="text-danger mb-4"><i class="fa-solid fa-triangle-exclamation"></i> Bu kaydı silmek istediğinize emin misiniz?</h3>
+
+        <div class="p-3 bg-light rounded border mb-4">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Tarih:</dt>
+                <dd class="col-sm-8">@Model.Tarih.ToString("dd.MM.yyyy")</dd>
+
+                <dt class="col-sm-4">Tür:</dt>
+                <dd class="col-sm-8">@Model.CikisTuru</dd>
+
+                <dt class="col-sm-4">Miktar:</dt>
+                <dd class="col-sm-8 fw-bold">@Model.Miktar Litre</dd>
+            </dl>
+        </div>
+
+        <form asp-action="DeleteCikis" class="d-flex gap-3 justify-content-end">
+            <input type="hidden" asp-for="Id" />
+            <a asp-action="CikisListesi" class="btn btn-outline-secondary">İptal</a>
+            <input type="submit" value="Evet, Sil" class="btn btn-danger" />
+        </form>
+    </div>
+</div>

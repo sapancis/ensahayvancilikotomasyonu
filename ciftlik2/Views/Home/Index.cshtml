@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Çiftlik Paneli";
+}
+
+<!-- ÜST BİLGİ KARTLARI -->
+<div class="dashboard-stats-grid">
+    <div class="stat-card green">
+        <div class="stat-icon"><i class="fa-solid fa-cow"></i></div>
+        <div class="stat-info">
+            <h3>Aktif Hayvan</h3>
+            <h2 id="kpi-aktif">...</h2>
+        </div>
+    </div>
+    <div class="stat-card blue">
+        <div class="stat-icon"><i class="fa-solid fa-bucket"></i></div>
+        <div class="stat-info">
+            <h3>Günlük Süt</h3>
+            <h2 id="kpi-gunluk-sut">...</h2>
+        </div>
+    </div>
+    <div class="stat-card orange">
+        <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+        <div class="stat-info">
+            <h3>Bugün Sağılan</h3>
+            <h2 id="kpi-sagilan">...</h2>
+        </div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="stat-info">
+            <h3>Aylık Toplam</h3>
+            <h2 id="kpi-aylik-sut">...</h2>
+        </div>
+    </div>
+</div>
+
+<!-- İÇERİK ALANI -->
+<div class="dashboard-content-wrapper">
+    <!-- SOL: UYARILAR -->
+    <div class="dashboard-section">
+        <div class="section-header">
+            <div class="header-title">
+                <i class="fa-solid fa-bell text-warning"></i> Uyarılar
+            </div>
+            <span class="badge-count" id="bildirim-sayisi">0</span>
+        </div>
+        <div id="bildirim-container" class="notification-feed">
+            <div class="p-4 text-center text-muted">Yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- SAĞ: HIZLI İŞLEMLER -->
+    <div class="dashboard-section">
+        <div class="section-header">
+            <div class="header-title">
+                <i class="fa-solid fa-bolt text-primary"></i> Hızlı İşlemler
+            </div>
+        </div>
+        <div class="quick-actions-grid">
+            <a asp-controller="Sut" asp-action="Create" class="quick-action-btn">
+                <div class="icon-box bg-green"><i class="fa-solid fa-bucket"></i></div>
+                <span>Süt Ekle</span>
+            </a>
+            <a asp-controller="Tohumlanmalar" asp-action="Create" class="quick-action-btn">
+                <div class="icon-box bg-blue"><i class="fa-solid fa-venus-mars"></i></div>
+                <span>Tohumlama</span>
+            </a>
+            <a asp-controller="Tedavi" asp-action="Create" class="quick-action-btn">
+                <div class="icon-box bg-red"><i class="fa-solid fa-user-doctor"></i></div>
+                <span>Tedavi</span>
+            </a>
+            <a asp-controller="Asi" asp-action="Create" class="quick-action-btn">
+                <div class="icon-box bg-orange"><i class="fa-solid fa-syringe"></i></div>
+                <span>Aşı</span>
+            </a>
+        </div>
+        <div class="mt-4 p-3 bg-light rounded text-muted small">
+            <i class="fa-solid fa-circle-info me-2"></i>
+            Tohumlamadan 18-23 gün sonrası kızgınlık kontrolü için kritiktir.
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadKpiBanner();
+            loadBildirimler();
+        });
+
+        function loadKpiBanner() {
+            $.get('/Home/GetKpiBanner', function (data) {
+                $('#kpi-aktif').text(data.aktifHayvan);
+                $('#kpi-gunluk-sut').text(data.gunlukSut);
+                $('#kpi-sagilan').text(data.sagilanSayisi);
+                $('#kpi-aylik-sut').text(data.aylikSut);
+            });
+        }
+
+        function loadBildirimler() {
+            $.get('/Home/GetBildirimler', function (data) {
+                var container = $('#bildirim-container');
+                container.empty();
+                $('#bildirim-sayisi').text(data.length);
+
+                if (data.length === 0) {
+                    container.html('<div class="p-4 text-center text-muted"><i class="fa-solid fa-check-circle fs-3 mb-2 text-success"></i><br>Her şey yolunda!</div>');
+                } else {
+                    $.each(data, function (i, item) {
+                        var cls = item.tur === "danger" ? "note-danger" : (item.tur === "warning" ? "note-warning" : "note-info");
+                        var html = `
+                            <div class="notification-card ${cls}">
+                                <div class="fs-4"><i class="fa-solid ${item.ikon}"></i></div>
+                                <div class="notif-text">
+                                    <strong>${item.baslik}</strong>
+                                    <p>${item.mesaj}</p>
+                                    <a href="${item.url}" class="small text-primary mt-1 d-inline-block">Görüntüle →</a>
+                                </div>
+                            </div>`;
+                        container.append(html);
+                    });
+                }
+            });
+        }
+    </script>
+}

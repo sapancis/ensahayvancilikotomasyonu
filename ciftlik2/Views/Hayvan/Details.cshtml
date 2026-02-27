@@ -1,0 +1,558 @@
+﻿@model ciftlik2.Models.Hayvan
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = $"Detay: {Model.KupeNumarasi}";
+}
+
+<style>
+    /* --- GENEL DÜZEN --- */
+    .detail-header {
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        border: 1px solid #E5E7EB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    /* --- SOL KOLON: KİMLİK KARTI --- */
+    .id-card-box {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .id-card-header {
+        background: #F9FAFB;
+        padding: 15px 20px;
+        border-bottom: 1px solid #E5E7EB;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid #F3F4F6;
+        align-items: center;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        color: #6B7280;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .info-value {
+        color: #1F2937;
+        font-weight: 600;
+        text-align: right;
+        font-size: 0.95rem;
+    }
+
+    /* --- SOL KOLON: HİKAYE KUTUSU (POST-IT) --- */
+    .story-card {
+        background: #FEFCE8; /* Sarı not kağıdı rengi */
+        border: 1px solid #FEF08A;
+        border-left: 4px solid #FACC15;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        position: relative;
+    }
+
+    .story-title {
+        font-weight: 700;
+        color: #854D0E;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .story-text {
+        color: #713F12;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        font-size: 0.95rem;
+    }
+
+    /* --- SAĞ KOLON: MODERN TAB & TABLO TASARIMI --- */
+    .tabs-container {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .custom-tabs {
+        display: flex;
+        background: #F9FAFB;
+        border-bottom: 1px solid #E5E7EB;
+        padding: 0 10px;
+        gap: 5px;
+        overflow-x: auto; /* Mobilde taşarsa kaydır */
+    }
+
+    .c-tab {
+        padding: 18px 20px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #6B7280;
+        font-size: 0.95rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .c-tab:hover {
+            color: var(--primary);
+            background: rgba(0,0,0,0.02);
+        }
+
+        .c-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+
+    .tab-content-wrapper {
+        padding: 0;
+        flex-grow: 1;
+        background: #fff;
+        position: relative;
+    }
+
+    /* Modern Tablo Stili */
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .modern-table th {
+            background: #F8FAFC;
+            color: #64748B;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .modern-table td {
+            padding: 16px 24px;
+            color: #334155;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #F1F5F9;
+            vertical-align: middle;
+        }
+
+        .modern-table tr:hover {
+            background-color: #F8FAFC;
+        }
+
+    /* Boş Durum (Empty State) */
+    .empty-state-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 20px;
+        text-align: center;
+        color: #94A3B8;
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+        opacity: 0.4;
+        color: #CBD5E1;
+    }
+
+    .empty-state-text {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* Durum Rozetleri (Pills) */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .pill-green {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .pill-red {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .pill-blue {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    .pill-gray {
+        background: #F1F5F9;
+        color: #475569;
+    }
+</style>
+
+<div class="page-container">
+
+    <!-- ÜST BAŞLIK -->
+    <div class="detail-header">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width:64px; height:64px; background:var(--primary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);">
+                <i class="fa-solid fa-cow"></i>
+            </div>
+            <div>
+                <h1 style="margin:0; font-size:2rem; font-weight: 700;">@Model.KupeNumarasi</h1>
+                <div class="d-flex gap-2 mt-2 align-items-center flex-wrap">
+                    <span class="badge bg-light text-dark border">@Model.Ad</span>
+                    <span class="badge bg-secondary">@Model.Cins</span> <!-- Irk düzeltildi -->
+                    <span class="badge bg-info text-dark">@Model.YasBilgisi</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-kupeNo="@Model.KupeNumarasi" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-pencil"></i> Düzenle
+            </a>
+            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                <i class="fa-solid fa-arrow-left"></i> Geri
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- SOL KOLON: KİMLİK & HİKAYE -->
+        <div class="col-lg-4 mb-4">
+
+            <!-- Kimlik Kartı -->
+            <div class="id-card-box">
+                <div class="id-card-header">
+                    <i class="fa-solid fa-id-card me-2"></i> Kimlik Bilgileri
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Durum</span>
+                    <span class="info-value">
+                        @if (Model.Aktif)
+                        {
+                            <span class="badge bg-success">Aktif Sürüde</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-danger">Sürüden Ayrıldı</span>
+                        }
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Cinsiyet</span>
+                    <span class="info-value">
+                        @if (Model.Cinsiyet == Cinsiyet.Disi)
+                        {
+                            <span style="color:#E91E63;"><i class="fa-solid fa-venus"></i> Dişi</span>
+                        }
+                        else
+                        {
+
+                            <span style="color:#2196F3;"><i class="fa-solid fa-mars"></i> Erkek</span>
+                        }
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Irk</span>
+                    <span class="info-value">@Model.Cins</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Doğum Tarihi</span>
+                    <span class="info-value">@(Model.DogumTarihi?.ToString("dd MMMM yyyy") ?? "-")</span>
+                </div>
+
+                @if (Model.GirisSekli == ciftlik2.Models.GirisSekli.Dogum)
+                {
+                    <div class="info-row"><span class="info-label">Anne Küpe No</span><span class="info-value">@Model.AnaKupeNumarasi</span></div>
+                    <div class="info-row"><span class="info-label">Baba Küpe No</span><span class="info-value">@Model.BabaKupeNumarasi</span></div>
+                }
+                else
+                {
+                    <div class="info-row"><span class="info-label">Giriş Şekli</span><span class="info-value">Satın Alma</span></div>
+                    <div class="info-row"><span class="info-label">Alış Fiyatı</span><span class="info-value">@Model.AlisFiyati?.ToString("C2")</span></div>
+                }
+            </div>
+
+            <!-- HİKAYE ALANI (VARSA GÖSTER) -->
+            @if (!string.IsNullOrEmpty(Model.Hikaye))
+            {
+                <div class="story-card">
+                    <div class="story-title"><i class="fa-solid fa-note-sticky"></i> Özel Notlar & Hikaye</div>
+                    <div class="story-text">@Model.Hikaye</div>
+                </div>
+            }
+
+        </div>
+
+        <!-- SAĞ KOLON: TABLOLAR -->
+        <div class="col-lg-8">
+            <div class="tabs-container">
+                <!-- Sekmeler -->
+                <div class="custom-tabs">
+                    <div class="c-tab active" onclick="openTab(event, 'asi-tab')">
+                        <i class="fa-solid fa-syringe me-2"></i>Aşılar
+                    </div>
+                    <div class="c-tab" onclick="openTab(event, 'tedavi-tab')">
+                        <i class="fa-solid fa-user-doctor me-2"></i>Tedaviler
+                    </div>
+                    <div class="c-tab" onclick="openTab(event, 'test-tab')">
+                        <i class="fa-solid fa-vial me-2"></i>Testler
+                    </div>
+                    @if (Model.Cinsiyet == Cinsiyet.Disi)
+                    {
+                        <div class="c-tab" onclick="openTab(event, 'ureme-tab')">
+                            <i class="fa-solid fa-baby-carriage me-2"></i>Üreme
+                        </div>
+                    }
+                </div>
+
+                <!-- Tablo İçerikleri -->
+                <div class="tab-content-wrapper">
+
+                    <!-- 1. AŞI TABLOSU -->
+                    <div id="asi-tab" class="tab-content" style="display:block;">
+                        @if (Model.AsiKayitlari.Any())
+                        {
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th width="30%">Tarih</th>
+                                        <th>Aşı İsmi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.AsiKayitlari.OrderByDescending(x => x.AsiTarihi))
+                                    {
+                                        <tr>
+                                            <td style="font-family:monospace; font-weight:600;">@item.AsiTarihi?.ToString("dd.MM.yyyy")</td>
+                                            <td><span class="status-pill pill-blue">@item.AsiIsmi</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="empty-state-box">
+                                <i class="fa-solid fa-syringe empty-state-icon"></i>
+                                <div class="empty-state-text">Henüz aşı kaydı girilmemiş.</div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 2. TEDAVİ TABLOSU -->
+                    <div id="tedavi-tab" class="tab-content" style="display:none;">
+                        @if (Model.TedaviKayitlari.Any())
+                        {
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Teşhis</th>
+                                        <th>Kullanılan İlaç</th>
+                                        <th>Süt Arınma</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.TedaviKayitlari.OrderByDescending(x => x.Id))
+                                    {
+                                        <tr>
+                                            <td class="fw-bold text-dark">@item.Teshis</td>
+                                            <td>@item.KullanilanIlac</td>
+                                            <td>
+                                                @if (item.SutArinmaTarihi.HasValue)
+                                                {
+                                                    if (item.SutArinmaTarihi >= DateTime.Today)
+                                                    {
+                                                        <span class="status-pill pill-red">
+                                                            <i class="fa-solid fa-ban me-1"></i> @item.SutArinmaTarihi.Value.ToString("dd.MM.yyyy")
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-pill pill-gray">@item.SutArinmaTarihi.Value.ToString("dd.MM.yyyy")</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="empty-state-box">
+                                <i class="fa-solid fa-stethoscope empty-state-icon"></i>
+                                <div class="empty-state-text">Kayıtlı tedavi geçmişi yok.</div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 3. TEST TABLOSU -->
+                    <div id="test-tab" class="tab-content" style="display:none;">
+                        @if (Model.TestKayitlari.Any())
+                        {
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th width="30%">Tarih</th>
+                                        <th>Test Adı</th>
+                                        <th>Sonuç</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.TestKayitlari.OrderByDescending(x => x.TestTarihi))
+                                    {
+                                        <tr>
+                                            <td style="font-family:monospace;">@item.TestTarihi?.ToString("dd.MM.yyyy")</td>
+                                            <td class="fw-bold">@item.TestIsmi</td>
+                                            <td>
+                                                @if (item.Sonuc.ToLower().Contains("negatif") || item.Sonuc.ToLower().Contains("temiz"))
+                                                {
+                                                    <span class="status-pill pill-green"><i class="fa-solid fa-check me-1"></i> @item.Sonuc</span>
+                                                }
+                                                else if (item.Sonuc.ToLower().Contains("pozitif"))
+                                                {
+                                                    <span class="status-pill pill-red"><i class="fa-solid fa-triangle-exclamation me-1"></i> @item.Sonuc</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-pill pill-gray">@item.Sonuc</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="empty-state-box">
+                                <i class="fa-solid fa-vial empty-state-icon"></i>
+                                <div class="empty-state-text">Yapılmış test kaydı bulunmuyor.</div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 4. ÜREME TABLOSU (Sadece Dişiler) -->
+                    @if (Model.Cinsiyet == Cinsiyet.Disi)
+                    {
+                        <div id="ureme-tab" class="tab-content" style="display:none;">
+                            @if (Model.Tohumlanmalar.Any())
+                            {
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tohumlama Tarihi</th>
+                                            <th>Baba</th>
+                                            <th>Durum</th>
+                                            <th>Tahmini Doğum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Tohumlanmalar.OrderByDescending(x => x.TohumlanmaTarihi))
+                                        {
+                                            <tr>
+                                                <td style="font-family:monospace;">@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</td>
+                                                <td>@(item.ErkekHayvan?.KupeNumarasi ?? "-")</td>
+                                                <td>
+                                                    @if (item.GebelikTestiSonucu == ciftlik2.Models.Enums.GebelikSonucu.Gebe)
+                                                    {
+                                                        <span class="status-pill pill-green"><i class="fa-solid fa-check me-1"></i> GEBE</span>
+                                                    }
+                                                    else if (item.GebelikTestiSonucu == ciftlik2.Models.Enums.GebelikSonucu.GebeDegil)
+                                                    {
+                                                        <span class="status-pill pill-red">BOŞ</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-pill pill-gray">BELİRSİZ</span>
+                                                    }
+                                                </td>
+                                                <td>@(item.GebelikTestiSonucu == ciftlik2.Models.Enums.GebelikSonucu.Gebe ? item.TahminiDogumTarihi.ToString("dd.MM.yyyy") : "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="empty-state-box">
+                                    <i class="fa-solid fa-baby-carriage empty-state-icon"></i>
+                                    <div class="empty-state-text">Tohumlama veya üreme kaydı yok.</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openTab(evt, tabName) {
+            // Tüm içerikleri gizle
+            var contents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].style.display = "none";
+            }
+            // Tüm tab butonlarından active sınıfını kaldır
+            var tabs = document.getElementsByClassName("c-tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            // Seçileni aç ve butonu aktif yap
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+}

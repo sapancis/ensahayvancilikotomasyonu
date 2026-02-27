@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ciftlik2.Models.AsiKaydi>
+
+@{
+    ViewData["Title"] = "Aşı Kayıt Listesi";
+}
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-syringe"></i> Aşı Kayıt Listesi</h1>
+
+        <div style="display: flex; gap: 10px;">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Yeni Tekil Kayıt
+            </a>
+            <a asp-action="TopluAsi" class="btn btn-secondary">
+                <i class="fa-solid fa-boxes-stacked"></i> Toplu Aşı Ekle
+            </a>
+            <a asp-action="ExportToExcel" class="btn btn-outline" style="background-color: #1D6F42; color: white;">
+                <i class="fa-solid fa-file-excel"></i> Excel'e Aktar
+            </a>
+        </div>
+    </div>
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hayvan Küpe No</th>
+                    <th>Hayvan Adı</th>
+                    <th>Aşı Adı</th>
+                    <th>Aşı Tarihi</th>
+                    <th class="text-center">Eylemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kayit in Model)
+                {
+                    <tr>
+                        <td><strong>@kayit.Hayvan.KupeNumarasi</strong></td>
+                        <td>@kayit.Hayvan.Ad</td>
+
+                        <td>@kayit.AsiIsmi</td>
+                        <td>
+                            @if (kayit.AsiTarihi.HasValue)
+                            {
+                                @kayit.AsiTarihi.Value.ToString("dd.MM.yyyy")
+                            }
+                        </td>
+
+                        <td class="action-buttons-cell">
+                            <a asp-action="Edit" asp-route-id="@kayit.Id" class="btn-icon btn-icon-edit" title="Düzenle">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@kayit.Id" class="btn-icon btn-icon-delete" title="Sil">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <div class="p-4 text-center text-muted">Henüz aşı kaydı bulunmuyor.</div>
+        }
+    </div>
+</div>

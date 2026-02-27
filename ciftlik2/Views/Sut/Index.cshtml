@@ -1,0 +1,114 @@
+﻿@model IEnumerable<ciftlik2.Models.SutKaydi>
+
+@{
+    ViewData["Title"] = "Süt Üretim Takibi";
+
+    double toplamSut = Model.Sum(x => x.Miktar);
+    int toplamKayit = Model.Count();
+    double ortalamaVerim = 0;
+    if (Model.Any() && Model.Sum(x => x.SagilanHayvanSayisi) > 0)
+    {
+        ortalamaVerim = toplamSut / Model.Sum(x => x.SagilanHayvanSayisi);
+    }
+}
+
+<div class="page-container">
+
+    <!-- YENİ MODERN İSTATİSTİK ŞERİDİ -->
+    <div class="stats-strip">
+        <!-- 1. Toplam Üretim -->
+        <div class="stat-item">
+            <div class="stat-strip-icon icon-purple">
+                <i class="fa-solid fa-bucket"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Toplam Üretim</span>
+                <span class="stat-value">@toplamSut.ToString("N0") <small style="font-size:0.9rem; font-weight:500;">Lt</small></span>
+            </div>
+        </div>
+
+        <!-- 2. Ortalama Verim -->
+        <div class="stat-item">
+            <div class="stat-strip-icon icon-blue">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Ort. Verim</span>
+                <span class="stat-value">@ortalamaVerim.ToString("N1") <small style="font-size:0.9rem; font-weight:500;">Lt/İnek</small></span>
+            </div>
+        </div>
+
+        <!-- 3. Kayıt Sayısı -->
+        <div class="stat-item">
+            <div class="stat-strip-icon icon-orange">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Kayıt Sayısı</span>
+                <span class="stat-value">@toplamKayit</span>
+            </div>
+        </div>
+    </div>
+    <!-- ŞERİT SONU -->
+
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-bucket"></i> Günlük Süt Üretimi</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="CikisListesi" class="btn btn-outline">
+                <i class="fa-solid fa-truck-arrow-right"></i> Satış & Gider
+            </a>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Yeni Sağım Kaydı
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Vakit</th>
+                    <th class="text-center">Sağılan İnek</th>
+                    <th class="text-center">Ort. Verim</th>
+                    <th class="text-end">Miktar</th>
+                    <th class="text-center" width="120">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    double satirVerim = item.SagilanHayvanSayisi > 0 ? (item.Miktar / item.SagilanHayvanSayisi) : 0;
+                    <tr>
+                        <td><span class="date-cell">@item.Tarih.ToString("dd.MM.yyyy")</span></td>
+                        <td>
+                            @if (item.Vakit == ciftlik2.Models.SagimVakti.Sabah)
+                            {
+                                <span class="badge bg-warning"><i class="fa-regular fa-sun"></i> Sabah</span>
+                            }
+                            else if (item.Vakit == ciftlik2.Models.SagimVakti.Aksam)
+                            {
+
+                                <span class="badge bg-dark"><i class="fa-solid fa-moon"></i> Akşam</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-secondary">Diğer</span>
+                            }
+                        </td>
+                        <td class="text-center">@item.SagilanHayvanSayisi</td>
+                        <td class="text-center text-muted">@satirVerim.ToString("N1") Lt</td>
+                        <td class="text-end fw-bold text-success">@item.Miktar.ToString("N1") Lt</td>
+                        <td class="action-buttons-cell">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-icon btn-icon-edit"><i class="fa-solid fa-pen"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-icon btn-icon-delete"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

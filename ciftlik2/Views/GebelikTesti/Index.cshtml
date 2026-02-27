@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Gebelik Testi Yapılacaklar";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-flask-vial"></i> Gebelik Testi Bekleyenler</h1>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Dişi Hayvan</th>
+                    <th>Erkek Hayvan</th>
+                    <th>Tohumlanma Tarihi</th>
+                    <th>Tohumlanma Türü</th>
+                    <th>Durum</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center" style="padding: 20px; color: #777;">
+                            Şu an test bekleyen kayıt bulunmuyor.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.DisiHayvan?.TamKupeNumarasi</strong>
+                                <br />
+                                <span class="text-muted">@item.DisiHayvan?.Ad</span>
+                            </td>
+                            <td>
+                                @if (item.ErkekHayvan != null)
+                                {
+                                    @($"{item.ErkekHayvan.TamKupeNumarasi} ({item.ErkekHayvan.Ad})")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">(Suni)</span>
+                                }
+                            </td>
+                            <td>@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</td>
+                            <td>@item.TohumlanmaTuru</td>
+                            <td>
+                                <span style="color: #e67e22; font-weight: bold;">
+                                    <i class="fa-regular fa-clock"></i> Test Bekliyor
+                                </span>
+                            </td>
+                            <td class="action-buttons-cell text-center">
+                                <a asp-action="Yap" asp-route-id="@item.Id" class="btn btn-primary btn-sm" style="border-radius: 20px; padding: 5px 15px;">
+                                    <i class="fa-solid fa-check"></i> Testi Gir
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+﻿@model ciftlik2.Models.Tohumlanma
+@using ciftlik2.Helpers
+@{
+    ViewData["Title"] = "Tohumlanma Detayı";
+}
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-circle-info"></i> Tohumlanma Detayı</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="fa-solid fa-pencil"></i> Düzenle</a>
+            <a asp-action="Index" class="btn btn-outline">Listeye Dön</a>
+        </div>
+    </div>
+
+    <div class="detail-layout">
+        <div class="detail-card">
+            <h3><i class="fa-solid fa-info-circle"></i> Genel Bilgiler</h3>
+            <dl class="detail-dl">
+                <dt>Dişi Hayvan</dt>
+                <dd>@($"{Model.DisiHayvan?.TamKupeNumarasi} - {Model.DisiHayvan?.Ad}")</dd>
+
+                <dt>Erkek Hayvan</dt>
+                <dd>@(Model.ErkekHayvan != null ? $"{Model.ErkekHayvan.TamKupeNumarasi} - {Model.ErkekHayvan.Ad}" : "-")</dd>
+
+                <dt>Tarih</dt>
+                <dd>@Model.TohumlanmaTarihi.ToString("dd MMMM yyyy")</dd>
+
+                <dt>Yöntem</dt>
+                <dd>@Model.TohumlanmaTuru.GetDisplayName()</dd>
+            </dl>
+        </div>
+
+        <div class="detail-card">
+            <h3><i class="fa-solid fa-stethoscope"></i> Gebelik Durumu</h3>
+            <dl class="detail-dl">
+                <dt>Test Durumu</dt>
+                <dd>@Model.GebelikTestDurumu.GetDisplayName()</dd>
+
+                <dt>Sonuç</dt>
+                <dd>
+                    @if (Model.GebelikTestiSonucu.HasValue)
+                    {
+                        <span class="badge @(Model.GebelikTestiSonucu.Value == ciftlik2.Models.Enums.GebelikSonucu.Gebe ? "bg-success" : "bg-danger")">
+                            @Model.GebelikTestiSonucu.Value.GetDisplayName()
+                        </span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>

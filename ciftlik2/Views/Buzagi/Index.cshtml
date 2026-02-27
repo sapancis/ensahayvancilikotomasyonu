@@ -1,0 +1,141 @@
+﻿@model ciftlik2.Controllers.BuzagiViewModel
+@{
+    ViewData["Title"] = "Buzağı Takibi";
+    int kesmeLimiti = ViewBag.KesmeGunu;
+}
+
+<div class="page-container">
+    <!-- Başlık Alanı -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-cow text-primary"></i> Buzağı Takip Paneli</h1>
+            <p class="text-muted">Buzağıların beslenme durumu ve sütten kesme takvimi.</p>
+        </div>
+        <div class="header-actions">
+            <span class="badge bg-white text-dark border px-3 py-2 shadow-sm">
+                <i class="fa-solid fa-bullseye text-danger"></i> Hedef: <strong>@kesmeLimiti. Gün</strong>
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- SOL: SÜT DÖNEMİ -->
+        <div class="col-lg-6 mb-4">
+            <div class="chart-card h-100">
+                <!-- Özel Header Class -->
+                <div class="chart-header header-milk">
+                    <h3><i class="fa-solid fa-bottle-droplet"></i> Süt Dönemi (@Model.SutEmenler.Count)</h3>
+                    <small>Hala süt ile beslenen, gelişimi devam eden buzağılar.</small>
+                </div>
+
+                <!-- Özel Scroll Alanı -->
+                <div class="buzagi-scroll-area">
+                    @if (Model.SutEmenler.Any())
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var h in Model.SutEmenler)
+                            {
+                                var yas = (DateTime.Today - h.DogumTarihi.Value).Days;
+                                var yuzde = Math.Min((double)yas / kesmeLimiti * 100, 100);
+                                var kalan = kesmeLimiti - yas;
+
+                                <!-- Özel Kart Class -->
+                                <div class="calf-card milk-active">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div>
+                                            <strong class="text-dark" style="font-size:1.05rem;">@h.KupeNumarasi</strong>
+                                            <span class="text-muted ms-2 small">@h.Ad</span>
+                                        </div>
+                                        <span class="badge bg-success bg-opacity-75">@yas Günlük</span>
+                                    </div>
+
+                                    <!-- Custom Progress Bar -->
+                                    <div class="progress-custom">
+                                        <div class="progress-bar bg-success" role="progressbar"
+                                             style="width: @yuzde%"
+                                             aria-valuenow="@yas" aria-valuemin="0" aria-valuemax="@kesmeLimiti">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted"><i class="fa-regular fa-calendar"></i> Doğum: @h.DogumTarihi?.ToString("dd.MM.yyyy")</small>
+
+                                        @if (kalan <= 5)
+                                        {
+                                            <small class="fw-bold text-danger animate-pulse">
+                                                <i class="fa-solid fa-clock"></i> Son @kalan gün!
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <small class="fw-bold text-success">@kalan gün kaldı</small>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                            <i class="fa-solid fa-check-circle fa-3x mb-3 text-success opacity-25"></i>
+                            <p>Şu an süt emen buzağı bulunmuyor.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- SAĞ: YEM DÖNEMİ (Sütten Kesilenler) -->
+        <div class="col-lg-6 mb-4">
+            <div class="chart-card h-100">
+                <div class="chart-header header-feed">
+                    <h3><i class="fa-solid fa-wheat-awn"></i> Yem Dönemi (@Model.SuttenKesilenler.Count)</h3>
+                    <small>Sütten kesilmiş, 6 aya kadar olan dana adayları.</small>
+                </div>
+
+                <div class="buzagi-scroll-area">
+                    @if (Model.SuttenKesilenler.Any())
+                    {
+                        <table class="buzagi-table">
+                            <tbody>
+                                @foreach (var h in Model.SuttenKesilenler)
+                                {
+                                    var yas = (DateTime.Today - h.DogumTarihi.Value).Days;
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div style="background:#FFF7ED; padding:8px; border-radius:50%; color:#EA580C;">
+                                                    <i class="fa-solid fa-cow"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">@h.KupeNumarasi</strong>
+                                                    <small class="text-muted">@h.Ad</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="text-secondary fw-bold">@yas Günlük</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="badge bg-warning text-dark border border-warning">
+                                                <i class="fa-solid fa-ban"></i> Sütten Kesildi
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                            <i class="fa-solid fa-box-open fa-3x mb-3 opacity-25"></i>
+                            <p>Bu kategoride hayvan yok.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

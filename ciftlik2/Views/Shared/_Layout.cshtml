@@ -1,0 +1,138 @@
+﻿@using ciftlik2.Models
+@inject CiftlikDbContext _context
+
+@{
+    // Veritabanından Çiftlik Adını Çek
+    var siteAyarlari = _context.Ayarlar.FirstOrDefault() ?? new SistemAyarlari();
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @siteAyarlari.CiftlikAdi</title>
+
+    <!-- Bootstrap CSS (CDN - GARANTİ) -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
+    <!-- Özel CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+    
+    <!-- NAVBAR (Üst Menü) -->
+    <header class="main-header">
+        <div class="container">
+            <nav>
+                <!-- 1. LOGO & ÇİFTLİK ADI -->
+                <a class="logo" asp-area="" asp-controller="Home" asp-action="Index">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                    <span>@siteAyarlari.CiftlikAdi</span>
+                </a>
+
+                <!-- 2. MOBİL MENÜ BUTONU (Hamburger) -->
+                <button class="menu-toggle" type="button" aria-label="Menüyü Aç">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <!-- 3. MENÜ LİNKLERİ -->
+                <ul class="nav-menu">
+                    
+                    <!-- Anasayfa -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="fa-solid fa-house"></i> Panel
+                        </a>
+                    </li>
+
+                    <!-- Hayvanlar -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Hayvan" asp-action="Index">
+                            <i class="fa-solid fa-list-ul"></i> Hayvanlar
+                        </a>
+                    </li>
+
+                    <!-- DROPDOWN: SÜT YÖNETİMİ -->
+                    <li class="nav-item has-dropdown">
+                        <button class="dropdown-toggle">
+                            <i class="fa-solid fa-bucket"></i> Süt <i class="fa-solid fa-chevron-down ms-1 small-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a asp-controller="Sut" asp-action="Index"><i class="fa-regular fa-pen-to-square"></i> Günlük Giriş</a></li>
+                            <li><a asp-controller="Sut" asp-action="CikisListesi"><i class="fa-solid fa-money-bill-transfer"></i> Satış & Kullanım</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- DROPDOWN: SAĞLIK & ÜREME -->
+                    <li class="nav-item has-dropdown">
+                        <button class="dropdown-toggle">
+                            <i class="fa-solid fa-heart-pulse"></i> Sağlık <i class="fa-solid fa-chevron-down ms-1 small-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a asp-controller="Buzagi" asp-action="Index"><i class="fa-solid fa-baby"></i> Buzağı Takip</a></li>
+                            <li><a asp-controller="Tohumlanmalar" asp-action="Index"><i class="fa-solid fa-venus-mars"></i> Tohumlama</a></li>
+                            <li><a asp-controller="Tohumlanmalar" asp-action="Gebeler"><i class="fa-solid fa-baby-carriage"></i> Gebeler</a></li>
+                            <li><hr class="dropdown-divider" style="border-color:#eee;"></li>
+                            <li><a asp-controller="Tedavi" asp-action="Index"><i class="fa-solid fa-user-doctor"></i> Tedaviler</a></li>
+                            <li><a asp-controller="Asi" asp-action="Index"><i class="fa-solid fa-syringe"></i> Aşılar</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- DROPDOWN: FİNANS & ANALİZ -->
+                    <li class="nav-item has-dropdown">
+                        <button class="dropdown-toggle">
+                            <i class="fa-solid fa-chart-line"></i> Analiz <i class="fa-solid fa-chevron-down ms-1 small-icon"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a asp-controller="Istatistik" asp-action="Index"><i class="fa-solid fa-chart-pie"></i> Grafikler</a></li>
+                            <li><a asp-controller="Finans" asp-action="Index"><i class="fa-solid fa-wallet"></i> Gelir / Gider</a></li>
+                            <li><a asp-controller="Yem" asp-action="Index"><i class="fa-solid fa-wheat"></i> Yem Deposu</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- AYARLAR (Dikkat Çekici) -->
+                    <li class="nav-item settings-item">
+                        <a class="nav-link" asp-controller="Ayarlar" asp-action="Index">
+                            <i class="fa-solid fa-gear"></i>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK ALANI -->
+    <div class="container main-content">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- ALT BİLGİ (Footer) -->
+    <footer class="border-top footer text-muted mt-5" style="background:#fff; padding: 20px 0;">
+        <div class="container text-center">
+            <small>&copy; @DateTime.Now.Year - <strong>@siteAyarlari.CiftlikAdi</strong> - Akıllı Çiftlik Sistemi</small>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

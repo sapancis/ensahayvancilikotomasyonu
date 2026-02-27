@@ -1,0 +1,76 @@
+﻿@model ciftlik2.Models.SutKaydi
+
+@{
+    ViewData["Title"] = "Yeni Süt Girişi";
+}
+
+<div class="form-container">
+    <h2 class="mb-4" style="color: var(--primary-green); border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        <i class="fa-solid fa-bucket"></i> Yeni Sağım Kaydı
+    </h2>
+
+    <form asp-action="Create" class="form-grid">
+        <div asp-validation-summary="ModelOnly" class="text-danger" style="grid-column: span 2;"></div>
+
+        <div class="form-group">
+            <label asp-for="Tarih" class="form-label">Tarih</label>
+            <input asp-for="Tarih" type="date" class="form-control" />
+            <span asp-validation-for="Tarih" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Vakit" class="form-label">Sağım Vakti</label>
+            <select asp-for="Vakit" class="form-control" asp-items="Html.GetEnumSelectList<ciftlik2.Models.SagimVakti>()"></select>
+            <span asp-validation-for="Vakit" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SagilanHayvanSayisi" class="form-label">Sağılan İnek Sayısı</label>
+            <input asp-for="SagilanHayvanSayisi" id="inputInek" class="form-control" type="number" min="1" placeholder="Örn: 50" oninput="hesaplaVerim()" />
+            <span asp-validation-for="SagilanHayvanSayisi" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Miktar" class="form-label">Toplam Süt (Litre)</label>
+            <div class="input-group">
+                <input asp-for="Miktar" id="inputMiktar" class="form-control" type="number" step="0.1" placeholder="0.0" oninput="hesaplaVerim()" />
+                <span class="input-group-text">Lt</span>
+            </div>
+            <!-- CANLI HESAPLAMA ALANI -->
+            <small class="text-muted d-block mt-1" id="infoVerim">
+                <i class="fa-solid fa-calculator"></i> Ort. Verim: - Lt/Baş
+            </small>
+            <span asp-validation-for="Miktar" class="text-danger"></span>
+        </div>
+
+        <div class="form-group" style="grid-column: span 2; margin-top: 20px;">
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="fa-solid fa-save"></i> Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-secondary w-100 mt-2">
+                <i class="fa-solid fa-times"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function hesaplaVerim() {
+            var inek = parseFloat(document.getElementById('inputInek').value);
+            var sut = parseFloat(document.getElementById('inputMiktar').value);
+            var info = document.getElementById('infoVerim');
+
+            if (inek > 0 && sut > 0) {
+                var ort = (sut / inek).toFixed(2);
+                info.innerHTML = '<strong class="text-success">' + ort + ' Lt/Baş</strong> ortalama verim.';
+            } else {
+                info.innerHTML = '<i class="fa-solid fa-calculator"></i> Ort. Verim: - Lt/Baş';
+            }
+        }
+    </script>
+}

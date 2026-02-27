@@ -1,0 +1,85 @@
+﻿@model IEnumerable<ciftlik2.Models.SutCikisi>
+@using ciftlik2.Helpers
+
+@{
+    ViewData["Title"] = "Süt Çıkış/Satış Kayıtları";
+    decimal toplamKazanc = Model.Sum(x => x.ToplamTutar);
+    double toplamCikanSut = Model.Sum(x => x.Miktar);
+}
+
+<div class="page-container">
+
+    <!-- YENİ MODERN İSTATİSTİK ŞERİDİ -->
+    <div class="stats-strip">
+        <!-- 1. Toplam Çıkış -->
+        <div class="stat-item">
+            <div class="stat-strip-icon icon-orange">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Toplam Çıkış</span>
+                <span class="stat-value">@toplamCikanSut.ToString("N0") <small style="font-size:0.9rem;">Lt</small></span>
+            </div>
+        </div>
+
+        <!-- 2. Toplam Gelir -->
+        <div class="stat-item">
+            <div class="stat-strip-icon icon-green">
+                <i class="fa-solid fa-turkish-lira-sign"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">Satış Geliri</span>
+                <span class="stat-value text-success">@toplamKazanc.ToString("N2") <small style="font-size:0.9rem;">₺</small></span>
+            </div>
+        </div>
+    </div>
+    <!-- ŞERİT SONU -->
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-truck-arrow-right"></i> Süt Çıkış & Satış</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline">
+                <i class="fa-solid fa-bucket"></i> Giriş Listesi
+            </a>
+            <a asp-action="CreateCikis" class="btn btn-danger">
+                <i class="fa-solid fa-minus"></i> Yeni Çıkış Ekle
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>İşlem Türü</th>
+                    <th>Açıklama</th>
+                    <th class="text-end">Miktar</th>
+                    <th class="text-end">Tutar</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="date-cell">@item.Tarih.ToString("dd.MM.yyyy")</span></td>
+                        <td>
+                            <span class="badge @(item.CikisTuru == ciftlik2.Models.Enums.SutCikisTuru.Satis ? "bg-success" : "bg-secondary")">
+                                @item.CikisTuru.GetDisplayName()
+                            </span>
+                        </td>
+                        <td>@item.Aciklama</td>
+                        <td class="text-end fw-bold">@item.Miktar.ToString("N1") Lt</td>
+                        <td class="text-end text-success">
+                            @(item.ToplamTutar > 0 ? item.ToplamTutar.ToString("C2") : "-")
+                        </td>
+                        <td class="action-buttons-cell">
+                            <a asp-action="DeleteCikis" asp-route-id="@item.Id" class="btn-icon btn-icon-delete"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

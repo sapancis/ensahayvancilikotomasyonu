@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ciftlik2.Models.YemAlisi>
+
+@{
+    ViewData["Title"] = "Yem Alım Listesi";
+}
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-wheat-awn"></i> Yem Alım Listesi</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Yeni Yem Alışı Ekle
+        </a>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Alış Tarihi</th>
+                    <th>Yem Türü</th>
+                    <th>Birim Fiyat (TL)</th>
+                    <th>Miktar (ton)</th>
+                    <th>Toplam Fiyat (TL)</th>
+                    <th class="text-center">Eylemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kayit in Model)
+                {
+                    <tr>
+                        <td>@kayit.AlisTarihi.ToString("dd.MM.yyyy")</td>
+                        <td>@kayit.YemTuru.GetDisplayName()</td>
+                        <td>@kayit.BirimFiyat.ToString("C2")</td>
+                        <td>@kayit.Miktar</td>
+                        <td>@kayit.ToplamFiyat.ToString("C2")</td>
+
+                        <td class="action-buttons-cell">
+                            <a asp-action="Edit" asp-route-id="@kayit.Id" class="btn-icon btn-icon-edit" title="Düzenle">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@kayit.Id" class="btn-icon btn-icon-delete" title="Sil">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

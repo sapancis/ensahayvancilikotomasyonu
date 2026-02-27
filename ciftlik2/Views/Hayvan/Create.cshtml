@@ -1,0 +1,308 @@
+﻿@model ciftlik2.Models.Hayvan
+@using ciftlik2.Models.Enums
+@{
+    ViewData["Title"] = "Yeni Hayvan";
+    bool dogumKaydi = ViewBag.RefTohumlamaId != null;
+}
+
+<!-- ÖZEL STİLLER -->
+<style>
+    .modern-form-container {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid #f0f0f0;
+        overflow: hidden;
+    }
+
+    .form-header-strip {
+        background: linear-gradient(135deg, var(--primary) 0%, #4CAF50 100%);
+        padding: 25px 30px;
+        color: #fff;
+    }
+
+    .form-body {
+        padding: 30px;
+    }
+
+    /* Form Bölümleri */
+    .form-section-box {
+        background: #F9FAFB;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .section-label {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Gelişmiş Radio Kartlar (Cinsiyet vb.) */
+    .custom-radio-group {
+        display: flex;
+        gap: 15px;
+    }
+
+        .custom-radio-group input {
+            display: none; /* Standart radio'yu gizle */
+        }
+
+    .radio-card {
+        flex: 1;
+        padding: 15px;
+        background: #fff;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: all 0.2s ease;
+    }
+
+        .radio-card:hover {
+            border-color: #D1D5DB;
+            background: #F3F4F6;
+        }
+
+        .radio-card i {
+            font-size: 1.2rem;
+        }
+
+    /* Seçili Durumlar */
+    input:checked + .radio-card.female {
+        border-color: #EC4899;
+        background: #FDF2F8;
+        color: #BE185D;
+        box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.1);
+    }
+
+    input:checked + .radio-card.male {
+        border-color: #3B82F6;
+        background: #EFF6FF;
+        color: #1D4ED8;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+    }
+
+    input:checked + .radio-card.entry-dogum {
+        border-color: var(--success);
+        background: #F0FDF4;
+        color: var(--success);
+    }
+
+    input:checked + .radio-card.entry-satin {
+        border-color: var(--primary);
+        background: #F0FDFA;
+        color: var(--primary);
+    }
+
+    /* Form Kontrolleri */
+    .modern-input {
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: 0.2s;
+    }
+
+        .modern-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            outline: none;
+        }
+</style>
+
+<div class="page-container">
+    <div class="modern-form-container">
+
+        <!-- HEADER -->
+        <div class="form-header-strip">
+            <h2 style="margin:0; font-size:1.5rem; display:flex; align-items:center; gap:10px;">
+                <i class="fa-solid fa-cow"></i>
+                @(dogumKaydi ? "Yeni Buzağı Kaydı" : "Yeni Hayvan Kaydı")
+            </h2>
+            <p style="margin:5px 0 0 0; opacity:0.9; font-size:0.9rem;">
+                @(dogumKaydi ? "Otomatik doğum süreci başlatıldı." : "Sürüye yeni bir hayvan ekleyin.")
+            </p>
+        </div>
+
+        <form asp-action="Create" class="form-body">
+
+            @if (dogumKaydi)
+            {
+                <input type="hidden" name="RefTohumlamaId" value="@ViewBag.RefTohumlamaId" />
+                <div class="alert alert-success mb-4" style="border-radius:8px;">
+                    <i class="fa-solid fa-baby-carriage"></i>
+                    <strong>@Model.AnaKupeNumarasi</strong> küpeli annenin doğumu işleniyor.
+                </div>
+            }
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- 1. BÖLÜM: KİMLİK KARTI -->
+            <div class="form-section-box">
+                <div class="section-label"><i class="fa-solid fa-id-card"></i> Temel Bilgiler</div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Küpe Numarası *</label>
+                        <input asp-for="KupeNumarasi" class="modern-input" placeholder="TR..." required />
+                        <span asp-validation-for="KupeNumarasi" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">İsim (Opsiyonel)</label>
+                        <input asp-for="Ad" class="modern-input" placeholder="Örn: Sarıkız" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Irk</label>
+                        <select asp-for="Cins" class="modern-input" asp-items="ViewBag.IrkListesi">
+                            <option value="">-- Seçiniz --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Doğum Tarihi *</label>
+                        <input asp-for="DogumTarihi" type="date" class="modern-input" required />
+                    </div>
+                </div>
+
+                <!-- Cinsiyet Seçimi (Görsel Kartlar) -->
+                <div class="mt-4">
+                    <label class="form-label mb-2">Cinsiyet *</label>
+                    <div class="custom-radio-group">
+                        <label>
+                            <input type="radio" asp-for="Cinsiyet" value="@Cinsiyet.Disi" id="cinsiyetDisi" checked="@(Model.Cinsiyet == Cinsiyet.Disi)" onchange="toggleFields()">
+                            <div class="radio-card female">
+                                <i class="fa-solid fa-venus"></i> Dişi
+                            </div>
+                        </label>
+                        <label>
+                            <input type="radio" asp-for="Cinsiyet" value="@Cinsiyet.Erkek" id="cinsiyetErkek" onchange="toggleFields()">
+                            <div class="radio-card male">
+                                <i class="fa-solid fa-mars"></i> Erkek
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Kısırlaştırma -->
+                <div id="kisirlastirmaAlani" class="mt-3 p-3 bg-white border rounded" style="display:none;">
+                    <div class="form-check">
+                        <input asp-for="Kisirlastirildi" class="form-check-input" type="checkbox" id="chkKisir">
+                        <label class="form-check-label fw-bold" for="chkKisir">Kısırlaştırıldı (Öküz)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. BÖLÜM: GELİŞ ŞEKLİ -->
+            <div class="form-section-box">
+                <div class="section-label"><i class="fa-solid fa-truck-ramp-box"></i> Sürüye Katılım Şekli</div>
+
+                <div class="custom-radio-group mb-4">
+                    <label style="flex:1;">
+                        <input type="radio" name="GirisSekli" id="girisDogum" value="Dogum" checked="@(dogumKaydi || Model.GirisSekli == ciftlik2.Models.GirisSekli.Dogum)" onchange="toggleFields()" @(dogumKaydi ? "disabled" : "")>
+                        <div class="radio-card entry-dogum">
+                            <i class="fa-solid fa-baby"></i> Çiftlikte Doğum
+                        </div>
+                    </label>
+
+                    @if (!dogumKaydi)
+                    {
+                        <label style="flex:1;">
+                            <input type="radio" name="GirisSekli" id="girisSatin" value="SatinAlma" onchange="toggleFields()">
+                            <div class="radio-card entry-satin">
+                                <i class="fa-solid fa-money-bill-wave"></i> Satın Alma
+                            </div>
+                        </label>
+                    }
+                </div>
+
+                <!-- Panel: Doğum -->
+                <div id="dogumPanel">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Anne Küpe No</label>
+                            <input asp-for="AnaKupeNumarasi" class="modern-input" readonly="@(dogumKaydi ? "readonly" : null)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Baba Küpe No</label>
+                            <input asp-for="BabaKupeNumarasi" class="modern-input" readonly="@(dogumKaydi ? "readonly" : null)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: Satın Alma -->
+                <div id="satinAlmaPanel" style="display:none;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Alış Tarihi</label>
+                            <input asp-for="AlisTarihi" type="date" class="modern-input" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Alış Fiyatı (TL)</label>
+                            <input asp-for="AlisFiyati" type="number" class="modern-input" placeholder="0.00" />
+                        </div>
+                    </div>
+                    <div class="mt-3" id="laktasyonAlani">
+                        <label class="form-label">Laktasyon Sayısı (Doğum Sayısı)</label>
+                        <input asp-for="LaktasyonSayisi" type="number" class="modern-input" value="0" />
+                        <small class="text-muted">Buzağı ise 0 bırakın.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. BÖLÜM: HİKAYE -->
+            <div class="form-section-box">
+                <div class="section-label"><i class="fa-solid fa-book-open"></i> Notlar & Hikaye</div>
+                <textarea asp-for="Hikaye" class="modern-input" rows="3" placeholder="Bu hayvanla ilgili özel notlar, ayırt edici özellikler..."></textarea>
+            </div>
+
+            <!-- BUTONLAR -->
+            <div class="d-flex gap-3 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-secondary btn-lg flex-grow-1">İptal</a>
+                <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                    <i class="fa-solid fa-check"></i> Kaydı Tamamla
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function toggleFields() {
+            var isErkek = document.getElementById("cinsiyetErkek").checked;
+            var isDogum = document.getElementById("girisDogum").checked;
+
+            // Kısırlaştırma
+            document.getElementById("kisirlastirmaAlani").style.display = isErkek ? "block" : "none";
+            if(!isErkek) document.getElementById("chkKisir").checked = false;
+
+            // Paneller
+            document.getElementById("dogumPanel").style.display = isDogum ? "block" : "none";
+            document.getElementById("satinAlmaPanel").style.display = isDogum ? "none" : "block";
+
+            // Laktasyon (Sadece dışarıdan gelen dişi inekler için)
+            var laktasyonDiv = document.getElementById("laktasyonAlani");
+            if(laktasyonDiv) laktasyonDiv.style.display = (!isDogum && !isErkek) ? "block" : "none";
+        }
+        document.addEventListener("DOMContentLoaded", toggleFields);
+    </script>
+}

@@ -1,0 +1,216 @@
+﻿@model IEnumerable<ciftlik2.Models.Tohumlanma>
+@using ciftlik2.Models.Enums
+
+@{
+    ViewData["Title"] = "Aktif Tohumlanmalar";
+}
+
+<!-- STİLLER: Sadece Modal İçindeki Butonlar İçin -->
+<style>
+    /* Modal içindeki seçim kartları */
+    .choice-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border: 2px solid #eee;
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        height: 100%;
+    }
+
+        .choice-btn i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .choice-btn span {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+    /* GEBE Butonu Tasarımı */
+    .btn-gebe-wrapper:hover .choice-btn {
+        background: #DCFCE7;
+        border-color: #166534;
+        color: #166534;
+        transform: translateY(-3px);
+    }
+
+    .btn-gebe-wrapper input:checked + .choice-btn {
+        background: #166534;
+        border-color: #166534;
+        color: #fff;
+    }
+
+    /* BOŞ Butonu Tasarımı */
+    .btn-bos-wrapper:hover .choice-btn {
+        background: #FEE2E2;
+        border-color: #991B1B;
+        color: #991B1B;
+        transform: translateY(-3px);
+    }
+
+    .btn-bos-wrapper input:checked + .choice-btn {
+        background: #991B1B;
+        border-color: #991B1B;
+        color: #fff;
+    }
+
+    /* Radyo butonlarını gizle */
+    .modal-radio {
+        display: none;
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-hourglass-half text-primary"></i> Test Bekleyenler</h1>
+            <p class="text-muted">Tohumlanmış ancak henüz gebelik sonucu girilmemiş hayvanlar.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="TohumlanmaArsivi" class="btn btn-secondary">
+                <i class="fa-solid fa-box-archive"></i> Geçmiş / Arşiv
+            </a>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Yeni Tohumlama
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Dişi Hayvan</th>
+                    <th>Baba</th>
+                    <th>Yöntem</th>
+                    <th class="text-center">Aksiyon</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="date-cell">@item.TohumlanmaTarihi.ToString("dd.MM.yyyy")</span></td>
+                        <td>
+                            <div class="animal-info">
+                                <div class="animal-icon"><i class="fa-solid fa-cow"></i></div>
+                                <div>
+                                    <strong>@item.DisiHayvan?.TamKupeNumarasi</strong><br>
+                                    <small class="text-muted">@item.DisiHayvan?.Ad</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@(item.ErkekHayvan?.TamKupeNumarasi ?? "-")</td>
+                        <td>@item.TohumlanmaTuru.GetDisplayName()</td>
+
+                        <!-- AKSİYON BUTONU (MODAL AÇAR) -->
+                        <td class="text-center">
+                            <!-- onclick olayına ID ve Küpe Numarasını gönderiyoruz -->
+                            <button type="button" class="btn btn-warning btn-sm text-white fw-bold"
+                                    onclick="openModal(@item.Id, '@item.DisiHayvan?.TamKupeNumarasi')">
+                                <i class="fa-solid fa-flask"></i> Sonuç Gir
+                            </button>
+                        </td>
+
+                        <td class="text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-icon-sm"><i class="fa-solid fa-pen"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-icon-sm text-danger"><i class="fa-solid fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-check-double"></i>
+                <p>Bekleyen test yok. Tüm kayıtlar güncel.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ================= MODAL (AÇILIR PENCERE) ================= -->
+<div class="modal fade" id="sonucModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px; overflow:hidden;">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-flask text-primary"></i> Test Sonucu Gir</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+
+            <form asp-action="TestSonucuGuncelle" method="post">
+                <div class="modal-body p-4 text-center">
+
+                    <!-- Dinamik Küpe Numarası Buraya Yazılacak -->
+                    <h3 id="modalKupeNo" class="text-primary mb-1">TR...</h3>
+                    <p class="text-muted mb-4">için gebelik testi sonucu nedir?</p>
+
+                    <!-- ID Gizli Olarak Gidecek -->
+                    <input type="hidden" name="id" id="modalIdInput" />
+
+                    <div class="row g-3">
+                        <!-- GEBE SEÇENEĞİ -->
+                        <div class="col-6 btn-gebe-wrapper">
+                            <label style="width:100%; height:100%;">
+                                <input type="radio" name="sonuc" value="1" class="modal-radio" required>
+                                <div class="choice-btn">
+                                    <i class="fa-solid fa-check"></i>
+                                    <span>GEBE</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- BOŞ SEÇENEĞİ -->
+                        <div class="col-6 btn-bos-wrapper">
+                            <label style="width:100%; height:100%;">
+                                <input type="radio" name="sonuc" value="0" class="modal-radio" required>
+                                <div class="choice-btn">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    <span>BOŞ</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">Kaydet ve Tamamla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Modal'ı açan ve verileri içine dolduran fonksiyon
+        function openModal(id, kupeNo) {
+            // ID'yi gizli inputa yaz
+            document.getElementById('modalIdInput').value = id;
+
+            // Küpe numarasını başlığa yaz
+            document.getElementById('modalKupeNo').innerText = kupeNo;
+
+            // Radio buton seçimlerini sıfırla
+            document.querySelectorAll('.modal-radio').forEach(r => r.checked = false);
+
+            // Bootstrap Modal'ı aç
+            var myModal = new bootstrap.Modal(document.getElementById('sonucModal'));
+            myModal.show();
+        }
+    </script>
+}
