@@ -1,5 +1,4 @@
-# 🚜 Ensa Hayvancılık Otomasyonu (v2.0)
-
+# 🚜 Ensa Hayvancılık Otomasyonu 
 **Geliştirici:** [@sapancis](https://github.com/sapancis)  
 **Teknoloji:** ASP.NET Core 8.0 MVC & Entity Framework Core
 
