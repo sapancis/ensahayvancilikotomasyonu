@@ -37,3 +37,13 @@ Bu proje; bir hayvancılık işletmesinin **finansal, biyolojik ve operasyonel**
 4. `dotnet run` ile projeyi başlatın.
 
 ---
+
+<img width="1397" height="901" alt="wvftZk" src="https://github.com/user-attachments/assets/70e48c8a-511f-4c46-bb6c-2a63c4d277c6" /><img width="1286" height="769" alt="wvf8Nc" src="https://github.com/user-attachments/assets/1adc131b-914f-40ec-83eb-45a664860a66" />
+<img width="1304" height="810" alt="wvfe8y" src="https://github.com/user-attachments/assets/57a3b24f-a413-4706-bd10-8ffe8801703f" />
+<img width="1341" height="749" alt="wvf39H" src="https://github.com/user-attachments/assets/156e985a-a5fc-4e40-a31f-80994bb62a0a" />
+<img width="1294" height="851" alt="wvf0Hb" src="https://github.com/user-attachments/assets/b053048f-a92e-4037-8177-0eb9507156d0" />
+<img width="1268" height="664" alt="wvf596" src="https://github.com/user-attachments/assets/f21f121e-b904-4fc8-a793-ede3deac251e" />
+<img width="1306" height="679" alt="wvfsT8" src="https://github.com/user-attachments/assets/3db5a6b1-9706-40fd-b298-5f7ff154cc74" />
+
+
+
